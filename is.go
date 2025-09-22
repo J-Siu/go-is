@@ -35,14 +35,14 @@ import (
 type Property struct {
 	// -- [rod] element
 
-	Page      *rod.Page    `json:"Page,omitempty"`      // Page element of [rod]
+	Page      *rod.Page    `json:"Page,omitempty"`      // REQUIRED: Page element of [rod].
 	Container *rod.Element `json:"Container,omitempty"` // The outer most rod.Element containing all repeating items
 
 	// -- URL
 
 	UrlCheck bool   `json:"UrlCheck,omitempty"` // Check [UrlStr] before loading
 	UrlLoad  bool   `json:"UrlLoad,omitempty"`  // Control if [UrlStr] should be load at the beginning of [Run]
-	UrlStr   string `json:"UrlStr,omitempty"`   // URL string used in [LoadPage]
+	UrlStr   string `json:"UrlStr,omitempty"`   // URL string used in [LoadPage]. Not use if [UrlLoad] = false
 
 	// -- Flow control
 
@@ -58,21 +58,21 @@ type Processor struct {
 	*basestruct.Base
 	*Property
 
-	// -- Following 4 field func rarely need overloading
+	// -- Following 4 field func rarely need override
 
 	// Load [UrlStr] into [Page]
 	//
-	// No overloading needed.
+	// No override needed.
 	LoadPage func() `json:"-"`
 
 	// Determine whether the scroll loop should continue running
 	//
-	// No overloading needed.
+	// No override needed.
 	ScrollLoopBreak func(state *State) bool `json:"-"`
 
 	// Detect end of page, scroll no longer possible.
 	//
-	// No overloading needed.
+	// No override needed.
 	//
 	// If elements are removed during [Run()], overload [V100_ExitScroll()] to do custom override.
 	// As both of following checks can be flawed if elements are removed from page DOM.
@@ -80,7 +80,7 @@ type Processor struct {
 
 	// Use [MustScrollIntoView] on [element]
 	//
-	// No overloading needed.
+	// No override needed.
 	ScrollElement func(element *rod.Element) `json:"-"`
 
 	// --- Overload following field func as needed
@@ -90,14 +90,14 @@ type Processor struct {
 	// build-in behavior is to return [property.Container]
 	//
 	// Override if needed
-	V010_Container func() *rod.Element `json:"-"`
+	V010_Container func() (container *rod.Element) `json:"-"`
 
 	// Return collection of repeating elements within [property.Page] or [property.Container]
 	//
 	// build-in behavior is to return `nil`
 	//
 	// **Must override**
-	V020_Elements func(element *rod.Element) *rod.Elements `json:"-"`
+	V020_Elements func(container *rod.Element) *rod.Elements `json:"-"`
 
 	// Extract information from [element] and put into an [IInfo] structure and return it.
 	//
@@ -158,7 +158,7 @@ type Processor struct {
 
 // Implement the default field functions
 func (p *Processor) setFunc() {
-	// -- Following 4 field func rarely need overloading
+	// -- Following 4 field func rarely need override
 	{
 
 		p.LoadPage = func() {
@@ -231,13 +231,13 @@ func (p *Processor) setFunc() {
 	}
 	// --- Overload following field func as needed
 	{
-		p.V010_Container = func() *rod.Element {
+		p.V010_Container = func() (container *rod.Element) {
 			prefix := p.MyType + ".V010_Container" + "(base)"
 			ezlog.Trace(prefix + ": Done")
 			return p.Container
 		}
 
-		p.V020_Elements = func(element *rod.Element) *rod.Elements {
+		p.V020_Elements = func(container *rod.Element) *rod.Elements {
 			prefix := p.MyType + ".V020_Elements" + "(base)"
 			ezlog.Trace(prefix + ": Do nothing. Return 'nil'.")
 			return nil
@@ -289,6 +289,8 @@ func (p *Processor) setFunc() {
 }
 
 // Process the page
+//
+// No override needed.
 func (p *Processor) Run() {
 	prefix := p.MyType + ".Run (base)"
 
@@ -325,7 +327,7 @@ func (p *Processor) Run() {
 				element := (*state.Elements)[index]
 				info := p.V030_ElementInfo(element, index)
 				matched, matchedStr := p.V040_ElementMatch(element, index, info)
-				{
+				if info != nil {
 					// Remove burden from package user
 					info.SetMatched(matched)
 					info.SetMatchedStr(matchedStr)
@@ -336,7 +338,7 @@ func (p *Processor) Run() {
 					p.V060_ElementProcessUnmatch(element, index, info)
 				}
 				p.V070_ElementProcess(element, index, info)
-				if p.IInfoList != nil {
+				if p.IInfoList != nil && info != nil {
 					tmp := append(*p.IInfoList, info)
 					p.IInfoList = &tmp
 				}
@@ -375,8 +377,8 @@ func New(property *Property) *Processor {
 	}
 	if p.Err == nil {
 		p.Property = property
-		p.Initialized = true
 		p.setFunc()
+		p.Initialized = true
 	}
 	ezlog.Trace("is.New(): Done")
 	return p
