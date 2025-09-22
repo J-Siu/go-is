@@ -171,7 +171,7 @@ Run() {
     if ScrollLoopBreak(state) { break }
     ScrollElement(state.ElementLast)
     elements = V020_Elements(Container)
-    for element in elements {
+    for element(new ones after scroll) in elements {
       // -- ELEMENTS LOOP - END
       info := V030_ElementInfo(element, index)
       matched, matchedStr := V040_ElementMatch(element, index, info)
@@ -187,9 +187,9 @@ Run() {
       // -- ELEMENTS LOOP - END
     }
     ScrollCalculation(state)
+    V100_ScrollLoopEnd(state)
+    // -- SCROLL LOOP - END
   }
-  V100_ScrollLoopEnd(state)
-  // -- SCROLL LOOP - END
 }
 ```
 ## Logging
