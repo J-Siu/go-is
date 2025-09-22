@@ -31,7 +31,7 @@ A basic workflow of creating a infinite scroll processor with `IS`.
 
 ### Example
 
-- [x-feed](/example/x-feed/) in [example](/example/) directory - X.com feed processing using [IS]. With comment referencing the basic workflow above.
+- [x-feed](/example/x-feed/) in [example](/example/) - X.com feed processing using [IS]. With comment referencing workflow above.
 - [yt-toolbox](https://github.com/J-Siu/yt-toolbox) - A more elaborate [IS] command line application.
 
 ## How to Use
