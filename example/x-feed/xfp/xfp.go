@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package xfeed
+// xfp - X.com Feed Processor
+// README (1)
+package xfp
 
 import (
 	"encoding/json"
@@ -30,21 +32,35 @@ import (
 	"github.com/go-rod/rod"
 )
 
-type XInfo struct {
-	is.InfoBase // MUST embed [is.InfoBase] to get [is.IInfo] interface
+// (1.1) Write a `info` struct
+type XFeedInfo struct {
+	is.InfoBase // (1.1) REQUIRED: embed [is.InfoBase] to get [is.IInfo] interface
 
+	// Added fields
 	User string `json:"user,omitempty"`
 	Text string `json:"text,omitempty"`
 }
 
-func (xi *XInfo) String() string { return xi.User + ": " + xi.Text }
+// (1.1) REQUIRED: embed `is.InfoBase` for `is.IInfo` interface
+func (xi *XFeedInfo) String() string { return xi.User + ": " + xi.Text }
 
-type XFeed struct {
-	*is.Processor // MUST embed [*is.Processor]
+// (1.2) Write a `processor` struct
+type XFeedProcessor struct {
+	*is.Processor // (1.2) REQUIRED: embed `*is.Processor`
 }
 
-// Override [is.Processor] field func
-func (x *XFeed) override() {
+// (1.3) Write package/struct level `New` function. Must accept `*is.Property` as one of its arguments.
+func (x *XFeedProcessor) New(
+	property *is.Property, // (1.3) REQUIRED: `*is.Property` as one of its arguments
+) *XFeedProcessor {
+	x.Processor = is.New(property) // (1.3) REQUIRED: use [is.New] to create and initialize the embedded [*is.Processor]
+	x.MyType = "xf"                // Optional: features of [basestruct.Base] embedded in [is.Processor]
+	x.override()                   // (1.3) Override `is.Processor` field functions as needed
+	return x
+}
+
+// (1.3) Override `is.Processor` field functions as needed
+func (x *XFeedProcessor) override() {
 	x.V020_Elements = func(element *rod.Element) *rod.Elements {
 		prefix := x.MyType + ".V020"
 		ezlog.Trace(prefix + ": Start")
@@ -62,7 +78,7 @@ func (x *XFeed) override() {
 		prefix := x.MyType + ".V030"
 		ezlog.Trace(prefix + ": Start")
 		ezlog.Trace(element.MustHTML())
-		info := new(XInfo)
+		info := new(XFeedInfo)
 		var (
 			err error
 			e   *rod.Element
@@ -94,16 +110,9 @@ func (x *XFeed) override() {
 	}
 }
 
-// Create and initialize XFeed
-func New(property *is.Property) *XFeed {
-	xf := new(XFeed)
-	xf.Processor = is.New(property) // MUST use [is.New] to create and initialize the embedded [*is.Processor]
-	xf.MyType = "xf"                // Optional: features of [basestruct.Base]
-	xf.override()
-	return xf
-}
-
 // helper function for printing/logging struct
+//
+// Not include in [IS]
 func MustToJsonStrP(obj any) *string {
 	prefix := "MustToJsonStrP"
 	var str string

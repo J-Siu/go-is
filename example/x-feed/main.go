@@ -28,10 +28,11 @@ import (
 	"github.com/J-Siu/go-dtquery/dq"
 	"github.com/J-Siu/go-ezlog"
 	"github.com/J-Siu/go-is"
-	"github.com/J-Siu/go-is/example/xfeed"
+	"github.com/J-Siu/go-is/example/x-feed/xfp"
 	"github.com/go-rod/rod"
 )
 
+// (2) Write `main`
 func main() {
 	ezlog.SetAllPrintln() // Setup ezlog print functions
 
@@ -40,31 +41,42 @@ func main() {
 	// ezlog.SetLogLevel(ezlog.DebugLevel)
 	// ezlog.SetLogLevel(ezlog.TraceLevel)
 
-	var xf *xfeed.XFeed
+	var x *xfp.XFeedProcessor
 
-	// [is] start at [rod.Page] level
 	page, err := getTab("localhost", 9222)
 	if err == nil {
+		// (2.1) Prepare a `is.Property` object, populate field as needed
 		property := is.Property{
-			IInfoList: new(is.IInfoList),
-			Page:      page,
-			ScrollMax: 3, // number of time we will scroll
+			Page:      page,              // (2.1) REQUIRED: populate `Page` field (a `*rod.Page`, representing a browser tab)
+			IInfoList: new(is.IInfoList), // Initialize this to use build-in info array
+			ScrollMax: 5,                 // number of time we will scroll, -1 for infinite (default: 0)
 			UrlLoad:   true,
 			UrlStr:    "https://x.com/home",
 		}
-		xf = xfeed.New(&property)
-		xf.Run()
-		err = xf.Err
+
+		// (2.2) Allocate the `processor`
+		x = new(xfp.XFeedProcessor)
+
+		// (2.3) Initialize the `processor` struct with the `property`
+		x.New(&property)
+
+		// (2.4) Call `Run`
+		x.Run()
+
+		err = x.Err
 	}
 	if err == nil {
-		xf.IInfoList.Print(is.PrintAll)
+		// (2.5) Output result
+		x.IInfoList.Print(is.PrintAll)
 	}
 	if err != nil {
 		ezlog.Err(err.Error())
 	}
 }
 
-// use [dq] to get devtools info, then set it up with [rod]
+// Helper function to connect to remote/running devtools with host and port only
+//
+// [dq] is not part of, [IS] package
 func getTab(host string, port int) (page *rod.Page, err error) {
 	prefix := "GetTab"
 	ezlog.Trace(prefix + ": Start")
