@@ -85,10 +85,9 @@ type XFeedProcessor struct {
 ```go
 // (1.3) Override `is.Processor` field functions as needed
 func (x *XFeedProcessor) override() {
-
   x.V020_Elements = func(element *rod.Element) *rod.Elements {
     prefix := x.MyType + ".V020"
-    ezlog.Trace(prefix + ": Start")
+    ezlog.Trace().Name(prefix).Msg("Start").Out()
     var es rod.Elements
     tagName := "article"
     if element == nil {
@@ -96,14 +95,13 @@ func (x *XFeedProcessor) override() {
     } else {
       es = element.MustElements(tagName)
     }
-    ezlog.Trace(prefix + ": End")
+    ezlog.Trace().Name(prefix).Msg("End").Out()
     return &es
   }
-
   x.V030_ElementInfo = func(element *rod.Element, index int) is.IInfo {
     prefix := x.MyType + ".V030"
-    ezlog.Trace(prefix + ": Start")
-    ezlog.Trace(element.MustHTML())
+    ezlog.Trace().Name(prefix).Msg("Start").Out()
+    ezlog.Trace().Msg(element.MustHTML()).Out()
     info := new(XFeedInfo)
     var (
       err error
@@ -128,13 +126,11 @@ func (x *XFeedProcessor) override() {
     if err == nil && e != nil {
       info.Text = e.MustText()
     }
-    ezlog.Debug(prefix + ": info:")
-    ezlog.DebugP(MustToJsonStrP(info))
+    ezlog.Debug().Name(prefix).NameLn("info:").Msg(info).Out()
 
-    ezlog.Trace(prefix + ": End")
+    ezlog.Trace().Name(prefix).Msg("End").Out()
     return info
   }
-}
 ```
 
 `is.Processor` comes with 14 field functions:
@@ -208,6 +204,8 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
 
 - v1.0.0
   - Initial commit
+- v1.1.0
+  - Update ezlog
 
 ### License
 

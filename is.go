@@ -28,7 +28,7 @@ import (
 	"strconv"
 
 	"github.com/J-Siu/go-basestruct"
-	"github.com/J-Siu/go-ezlog"
+	"github.com/J-Siu/go-ezlog/v2"
 	"github.com/go-rod/rod"
 )
 
@@ -163,23 +163,23 @@ func (p *Processor) setFunc() {
 
 		p.LoadPage = func() {
 			prefix := p.MyType + ".LoadPage" + "(base)"
-			ezlog.Trace(prefix + ": Start")
+			ezlog.Trace().Name(prefix).Msg("Start").Out()
 			if p.CheckErrInit(prefix) {
 				if p.UrlLoad {
-					ezlog.Debug(prefix + ": urlStr: " + p.UrlStr)
+					ezlog.Debug().Name(prefix).Name("urlStr").Msg(p.UrlStr).Out()
 					p.Err = p.Page.Navigate(p.UrlStr)
 					if p.Err == nil {
-						ezlog.Trace(prefix + ": MustWaitDOMStable: Start")
+						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("Start").Out()
 						p.Page.MustWaitDOMStable()
-						ezlog.Trace(prefix + ": MustWaitDOMStable: Start")
+						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("End").Out()
 					}
 				}
 				if p.Err != nil {
 					p.Err = errors.New(prefix + ": " + p.Err.Error())
-					ezlog.Err(p.Err.Error())
+					ezlog.Err().Msg(p.Err).Out()
 				}
 			}
-			ezlog.Trace(prefix + ": End")
+			ezlog.Trace().Name(prefix).Msg("End").Out()
 		}
 
 		p.ScrollCalculation = func(state *State) (scroll bool) {
@@ -200,31 +200,32 @@ func (p *Processor) setFunc() {
 			} else if state.ElementLastScroll == state.ElementLast {
 				scroll = false
 			}
-			ezlog.Trace(prefix + ": MustWaitDOMStable: Done")
+			ezlog.Trace().Name(prefix).Msg("Done").Out()
 			return scroll
 		}
 
 		p.ScrollElement = func(element *rod.Element) {
 			prefix := p.MyType + ".ScrollElement (base)"
-			ezlog.Trace(prefix + ": Start")
+			ezlog.Trace().Name(prefix).Msg("Start").Out()
 			if element != nil {
 				element.MustScrollIntoView()
-				ezlog.Trace(prefix + ": Scrolled")
-				ezlog.Trace(prefix + ": MustWaitDOMStable: Start")
+				ezlog.Trace().Name(prefix).Msg("Scrolled").Out()
+				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("Start").Out()
 				p.Page.MustWaitDOMStable()
-				ezlog.Trace(prefix + ": MustWaitDOMStable: End")
+				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("End").Out()
 			}
-			ezlog.Trace(prefix + ": End")
+			ezlog.Trace().Name(prefix).Msg("End").Out()
 		}
 
 		p.ScrollLoopBreak = func(state *State) bool {
 			breakLoop := !(state.Scroll && (state.ScrollCount <= p.ScrollMax || p.ScrollMax < 0))
-			if ezlog.LogLevel() == ezlog.TraceLevel {
+			if ezlog.GetLogLevel() == ezlog.TraceLevel {
 				msg := "scrollMax: " + strconv.Itoa(p.ScrollMax) + "\n"
 				msg += "breakLoop: " + "!(state.Scroll && (state.ScrollCount <= scrollMax || scrollMax < 0)) = " + strconv.FormatBool(breakLoop)
-				ezlog.Trace(p.MyType + ".ScrollLoopBreak (base):")
-				ezlog.TraceP(state.String())
-				ezlog.TraceP(&msg)
+				ezlog.Trace().
+					NameLn(p.MyType + ".ScrollLoopBreak (base):").
+					MsgLn(state.String()).
+					Msg(&msg).Out()
 			}
 			return breakLoop
 		}
@@ -233,57 +234,57 @@ func (p *Processor) setFunc() {
 	{
 		p.V010_Container = func() (container *rod.Element) {
 			prefix := p.MyType + ".V010_Container" + "(base)"
-			ezlog.Trace(prefix + ": Done")
+			ezlog.Trace().Name(prefix).Msg("Done").Out()
 			return p.Container
 		}
 
 		p.V020_Elements = func(container *rod.Element) *rod.Elements {
 			prefix := p.MyType + ".V020_Elements" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing. Return 'nil'.")
+			ezlog.Trace().Name(prefix).Msg("Do nothing. Return `nil`").Out()
 			return nil
 		}
 
 		p.V030_ElementInfo = func(element *rod.Element, index int) (info IInfo) {
 			prefix := p.MyType + ".V030_ElementInfo" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing. Return 'nil'.")
+			ezlog.Trace().Name(prefix).Msg("Do nothing. Return `nil`").Out()
 			return nil
 
 		}
 		p.V040_ElementMatch = func(element *rod.Element, index int, info IInfo) (matched bool, matchedStr string) {
 			prefix := p.MyType + ".V040_ElementMatch" + "(base)"
-			ezlog.Trace(prefix + ": return true, \"\"")
+			ezlog.Trace().Name(prefix).Msg("Do nothing. Return `true`,\"\"").Out()
 			return true, ""
 		}
 
 		p.V050_ElementProcessMatched = func(element *rod.Element, index int, info IInfo) {
 			prefix := p.MyType + ".V050_ElementProcessMatched" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing")
+			ezlog.Trace().Name(prefix).Msg("Do nothing").Out()
 		}
 
 		p.V060_ElementProcessUnmatch = func(element *rod.Element, index int, info IInfo) {
 			prefix := p.MyType + ".V060_ElementProcessUnmatch" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing")
+			ezlog.Trace().Name(prefix).Msg("Do nothing").Out()
 		}
 
 		p.V070_ElementProcess = func(element *rod.Element, index int, info IInfo) {
 			prefix := p.MyType + ".V070_ElementProcess" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing")
+			ezlog.Trace().Name(prefix).Msg("Do nothing").Out()
 		}
 
 		p.V080_ElementScrollable = func(element *rod.Element, index int, info IInfo) bool {
 			prefix := p.MyType + ".V080_ElementScrollable" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing. Return 'true'.")
+			ezlog.Trace().Name(prefix).Msg("Do nothing. Return `true`").Out()
 			return true
 		}
 
 		p.V090_ElementLoopEnd = func(element *rod.Element, index int, info IInfo) {
 			prefix := p.MyType + ".V090_ElementLoopEnd" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing")
+			ezlog.Trace().Name(prefix).Msg("Do nothing").Out()
 		}
 
 		p.V100_ScrollLoopEnd = func(state *State) {
 			prefix := p.MyType + ".V100_ScrollLoopEnd" + "(base)"
-			ezlog.Trace(prefix + ": Do nothing")
+			ezlog.Trace().Name(prefix).Msg("Do nothing").Out()
 		}
 	}
 }
@@ -321,7 +322,7 @@ func (p *Processor) Run() {
 			state.Scroll = false // no element, no scroll
 		} else {
 			elementsCount = len(*state.Elements)
-			ezlog.Debug(prefix + ": elementCount: " + strconv.Itoa(elementsCount))
+			ezlog.Trace().Name(prefix).Name("elementCount").Msg(elementsCount).Out()
 			for index := state.ElementCountLast; index < elementsCount; index++ {
 				// -- ELEMENTS LOOP - START
 				element := (*state.Elements)[index]
@@ -380,6 +381,6 @@ func New(property *Property) *Processor {
 		p.setFunc()
 		p.Initialized = true
 	}
-	ezlog.Trace("is.New(): Done")
+	ezlog.Trace().Msg("is.New(): Done").Out()
 	return p
 }

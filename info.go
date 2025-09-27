@@ -23,9 +23,7 @@ THE SOFTWARE.
 package is
 
 import (
-	"strconv"
-
-	"github.com/J-Siu/go-ezlog"
+	"github.com/J-Siu/go-ezlog/v2"
 )
 
 type IInfoListPrintMode int8
@@ -72,21 +70,15 @@ type IInfoList []IInfo
 func (list *IInfoList) Print(mode IInfoListPrintMode) {
 	var mark string
 	for c, info := range *list {
-		mark = " [ ] "
+		mark = "[ ]"
 		if info.Matched() {
-			mark = " [X] "
+			mark = "[X]"
 		}
-		switch mode {
-		case PrintAll:
-			ezlog.Msg(strconv.Itoa(c+1) + mark + info.String())
-		case PrintMatched:
-			if info.Matched() {
-				ezlog.Msg(strconv.Itoa(c+1) + mark + info.String())
-			}
-		case PrintUnmatched:
-			if !info.Matched() {
-				ezlog.Msg(strconv.Itoa(c+1) + mark + info.String())
-			}
+
+		if mode == PrintAll ||
+			mode == PrintMatched && info.Matched() ||
+			mode == PrintUnmatched && !info.Matched() {
+			ezlog.Log().Msg(c + 1).Msg(mark).Msg(info.String()).Out()
 		}
 	}
 }

@@ -26,7 +26,7 @@ import (
 	"errors"
 
 	"github.com/J-Siu/go-dtquery/dq"
-	"github.com/J-Siu/go-ezlog"
+	"github.com/J-Siu/go-ezlog/v2"
 	"github.com/J-Siu/go-is"
 	"github.com/J-Siu/go-is/example/x-feed/xfp"
 	"github.com/go-rod/rod"
@@ -34,7 +34,7 @@ import (
 
 // (2) Write `main`
 func main() {
-	ezlog.SetAllPrintln() // Setup ezlog print functions
+	ezlog.StrAny.IndentEnable(true)
 
 	// Select log level
 	ezlog.SetLogLevel(ezlog.ErrLevel)
@@ -70,7 +70,7 @@ func main() {
 		x.IInfoList.Print(is.PrintAll)
 	}
 	if err != nil {
-		ezlog.Err(err.Error())
+		ezlog.Err().Msg(err).Out()
 	}
 }
 
@@ -79,7 +79,7 @@ func main() {
 // [dq] is not part of, [IS] package
 func getTab(host string, port int) (page *rod.Page, err error) {
 	prefix := "GetTab"
-	ezlog.Trace(prefix + ": Start")
+	ezlog.Trace().Name(prefix).Msg("Start").Out()
 	var (
 		browser *rod.Browser
 		pages   rod.Pages
@@ -106,6 +106,6 @@ func getTab(host string, port int) (page *rod.Page, err error) {
 	if err != nil {
 		err = errors.New(prefix + ": Err: " + err.Error())
 	}
-	ezlog.Trace(prefix + ": End")
+	ezlog.Trace().Name(prefix).Msg("End").Out()
 	return page, err
 }
