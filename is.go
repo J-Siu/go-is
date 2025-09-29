@@ -28,7 +28,7 @@ import (
 	"strconv"
 
 	"github.com/J-Siu/go-basestruct"
-	"github.com/J-Siu/go-ezlog/v2"
+	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/go-rod/rod"
 )
 

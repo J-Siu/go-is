@@ -25,7 +25,7 @@ THE SOFTWARE.
 package xfp
 
 import (
-	"github.com/J-Siu/go-ezlog/v2"
+	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/J-Siu/go-is"
 	"github.com/go-rod/rod"
 )

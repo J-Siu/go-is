@@ -206,6 +206,8 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
   - Initial commit
 - v1.1.0
   - Update ezlog
+- v1.1.1
+  - Update `go-helper`, `go-dtquery`
 
 ### License
 

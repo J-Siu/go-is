@@ -23,7 +23,7 @@ THE SOFTWARE.
 package is
 
 import (
-	"github.com/J-Siu/go-ezlog/v2"
+	"github.com/J-Siu/go-helper/v2/ezlog"
 )
 
 type IInfoListPrintMode int8

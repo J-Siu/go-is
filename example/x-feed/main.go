@@ -26,7 +26,7 @@ import (
 	"errors"
 
 	"github.com/J-Siu/go-dtquery/dq"
-	"github.com/J-Siu/go-ezlog/v2"
+	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/J-Siu/go-is"
 	"github.com/J-Siu/go-is/example/x-feed/xfp"
 	"github.com/go-rod/rod"
@@ -34,7 +34,6 @@ import (
 
 // (2) Write `main`
 func main() {
-	ezlog.StrAny.IndentEnable(true)
 
 	// Select log level
 	ezlog.SetLogLevel(ezlog.ErrLevel)
