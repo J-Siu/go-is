@@ -78,7 +78,7 @@ func (list *IInfoList) Print(mode IInfoListPrintMode) {
 		if mode == PrintAll ||
 			mode == PrintMatched && info.Matched() ||
 			mode == PrintUnmatched && !info.Matched() {
-			ezlog.Log().Msg(c + 1).Msg(mark).Msg(info.String()).Out()
+			ezlog.Log().M(c + 1).M(mark).M(info.String()).Out()
 		}
 	}
 }

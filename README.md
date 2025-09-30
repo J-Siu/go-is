@@ -87,7 +87,7 @@ type XFeedProcessor struct {
 func (x *XFeedProcessor) override() {
   x.V020_Elements = func(element *rod.Element) *rod.Elements {
     prefix := x.MyType + ".V020"
-    ezlog.Trace().Name(prefix).TxtStart().Out()
+    ezlog.Trace().N(prefix).TxtStart().Out()
     var es rod.Elements
     tagName := "article"
     if element == nil {
@@ -95,13 +95,13 @@ func (x *XFeedProcessor) override() {
     } else {
       es = element.MustElements(tagName)
     }
-    ezlog.Trace().Name(prefix).TxtEnd().Out()
+    ezlog.Trace().N(prefix).TxtEnd().Out()
     return &es
   }
   x.V030_ElementInfo = func(element *rod.Element, index int) is.IInfo {
     prefix := x.MyType + ".V030"
-    ezlog.Trace().Name(prefix).TxtStart().Out()
-    ezlog.Trace().Msg(element.MustHTML()).Out()
+    ezlog.Trace().N(prefix).TxtStart().Out()
+    ezlog.Trace().M(element.MustHTML()).Out()
     info := new(XFeedInfo)
     var (
       err error
@@ -126,9 +126,9 @@ func (x *XFeedProcessor) override() {
     if err == nil && e != nil {
       info.Text = e.MustText()
     }
-    ezlog.Debug().Name(prefix).NameLn("info").Msg(info).Out()
+    ezlog.Debug().N(prefix).Nn("info").M(info).Out()
 
-    ezlog.Trace().Name(prefix).TxtEnd().Out()
+    ezlog.Trace().N(prefix).TxtEnd().Out()
     return info
   }
 ```
@@ -209,6 +209,8 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
 - v1.1.1
   - Update `go-helper`, `go-dtquery`
 - v1.1.2
+  - Update go-helper/v2
+- v1.1.3
   - Update go-helper/v2
 
 ### License
