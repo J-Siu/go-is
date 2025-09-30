@@ -163,15 +163,15 @@ func (p *Processor) setFunc() {
 
 		p.LoadPage = func() {
 			prefix := p.MyType + ".LoadPage" + "(base)"
-			ezlog.Trace().Name(prefix).Msg("Start").Out()
+			ezlog.Trace().Name(prefix).TxtStart().Out()
 			if p.CheckErrInit(prefix) {
 				if p.UrlLoad {
 					ezlog.Debug().Name(prefix).Name("urlStr").Msg(p.UrlStr).Out()
 					p.Err = p.Page.Navigate(p.UrlStr)
 					if p.Err == nil {
-						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("Start").Out()
+						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").TxtStart().Out()
 						p.Page.MustWaitDOMStable()
-						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("End").Out()
+						ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").TxtEnd().Out()
 					}
 				}
 				if p.Err != nil {
@@ -179,7 +179,7 @@ func (p *Processor) setFunc() {
 					ezlog.Err().Msg(p.Err).Out()
 				}
 			}
-			ezlog.Trace().Name(prefix).Msg("End").Out()
+			ezlog.Trace().Name(prefix).TxtEnd().Out()
 		}
 
 		p.ScrollCalculation = func(state *State) (scroll bool) {
@@ -206,15 +206,15 @@ func (p *Processor) setFunc() {
 
 		p.ScrollElement = func(element *rod.Element) {
 			prefix := p.MyType + ".ScrollElement (base)"
-			ezlog.Trace().Name(prefix).Msg("Start").Out()
+			ezlog.Trace().Name(prefix).TxtStart().Out()
 			if element != nil {
 				element.MustScrollIntoView()
 				ezlog.Trace().Name(prefix).Msg("Scrolled").Out()
-				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("Start").Out()
+				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").TxtStart().Out()
 				p.Page.MustWaitDOMStable()
-				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").Msg("End").Out()
+				ezlog.Trace().Name(prefix).Name("MustWaitDOMStable").TxtEnd().Out()
 			}
-			ezlog.Trace().Name(prefix).Msg("End").Out()
+			ezlog.Trace().Name(prefix).TxtEnd().Out()
 		}
 
 		p.ScrollLoopBreak = func(state *State) bool {
@@ -223,7 +223,7 @@ func (p *Processor) setFunc() {
 				msg := "scrollMax: " + strconv.Itoa(p.ScrollMax) + "\n"
 				msg += "breakLoop: " + "!(state.Scroll && (state.ScrollCount <= scrollMax || scrollMax < 0)) = " + strconv.FormatBool(breakLoop)
 				ezlog.Trace().
-					NameLn(p.MyType + ".ScrollLoopBreak (base):").
+					NameLn(p.MyType + ".ScrollLoopBreak (base)").
 					MsgLn(state.String()).
 					Msg(&msg).Out()
 			}

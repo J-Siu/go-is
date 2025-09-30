@@ -78,7 +78,7 @@ func main() {
 // [dq] is not part of, [IS] package
 func getTab(host string, port int) (page *rod.Page, err error) {
 	prefix := "GetTab"
-	ezlog.Trace().Name(prefix).Msg("Start").Out()
+	ezlog.Trace().Name(prefix).TxtStart().Out()
 	var (
 		browser *rod.Browser
 		pages   rod.Pages
@@ -105,6 +105,6 @@ func getTab(host string, port int) (page *rod.Page, err error) {
 	if err != nil {
 		err = errors.New(prefix + ": Err: " + err.Error())
 	}
-	ezlog.Trace().Name(prefix).Msg("End").Out()
+	ezlog.Trace().Name(prefix).TxtEnd().Out()
 	return page, err
 }
