@@ -27,7 +27,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/J-Siu/go-basestruct"
+	"github.com/J-Siu/go-helper/v2/basestruct"
 	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/go-rod/rod"
 )
