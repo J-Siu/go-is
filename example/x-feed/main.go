@@ -36,9 +36,9 @@ import (
 func main() {
 
 	// Select log level
-	ezlog.SetLogLevel(ezlog.ErrLevel)
+	ezlog.SetLogLevel(ezlog.ERR)
 	// ezlog.SetLogLevel(ezlog.DebugLevel)
-	// ezlog.SetLogLevel(ezlog.TraceLevel)
+	// ezlog.SetLogLevel(ezlog.TRACE)
 
 	var x *xfp.XFeedProcessor
 

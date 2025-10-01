@@ -216,6 +216,8 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
   - Update go-helper/v2, go-dtquery
 - v1.1.5
   - Update go-helper/v2, go-dtquery
+- v1.1.6
+  - Update go-helper/v2, go-dtquery
 
 ### License
 
