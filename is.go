@@ -365,8 +365,7 @@ func (p *Processor) Run() {
 //
 // Returns:
 //   - *Processor
-func New(property *Property) *Processor {
-	p := new(Processor)
+func (p *Processor) New(property *Property) *Processor {
 	p.Base = new(basestruct.Base)
 	p.MyType = "is.Processor"
 
@@ -381,6 +380,13 @@ func New(property *Property) *Processor {
 		p.setFunc()
 		p.Initialized = true
 	}
-	ezlog.Trace().M("is.New(): Done").Out()
+	ezlog.Trace().M("is.New()").M("Done").Out()
 	return p
 }
+
+// Parameters:
+//   - property *Property
+//
+// Returns:
+//   - *Processor
+func New(property *Property) *Processor { return new(Processor).New(property) }

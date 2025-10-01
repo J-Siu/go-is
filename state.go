@@ -52,7 +52,7 @@ func (s *State) New() *State {
 	s.MyType = "RunState"
 	s.Initialized = true
 
-	// 'Scroll' need to be init, as the default is 'false'
+	// 'Scroll' need to be init, as the default value is 'false'
 	s.Scroll = true
 
 	return s

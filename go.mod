@@ -3,8 +3,8 @@ module github.com/J-Siu/go-is
 go 1.25.1
 
 require (
-	github.com/J-Siu/go-dtquery v0.0.6
-	github.com/J-Siu/go-helper/v2 v2.4.0
+	github.com/J-Siu/go-dtquery v0.0.7
+	github.com/J-Siu/go-helper/v2 v2.4.1
 	github.com/go-rod/rod v0.116.2
 )
 
