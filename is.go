@@ -302,12 +302,7 @@ func (p *Processor) Run() {
 		return // LoadPage failed
 	}
 	p.Container = p.V010_Container()
-	// -- Scroll Loop
-	for {
-		// -- SCROLL LOOP - START
-		if p.ScrollLoopBreak(state) {
-			break // exit Run()
-		}
+	for !p.ScrollLoopBreak(state) {
 		p.ScrollElement(state.ElementLast)
 
 		// -- Get elements
