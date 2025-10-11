@@ -38,13 +38,13 @@ import (
 type State struct {
 	*basestruct.Base
 
-	Elements          *rod.Elements `json:"elements,omitempty"`            // Result of [Processor.V020_Elements()]
-	ElementLast       *rod.Element  `json:"element_last,omitempty"`        // Last element of the previous scroll loop iteration
-	ElementLastScroll *rod.Element  `json:"element_last_scroll,omitempty"` // Element used for previous scroll (not necessary last loop iteration)
-	ElementCountLast  int           `json:"element_count_last,omitempty"`  // Number of elements of previous loop iteration
-	InfoLast          IInfo         `json:"info_last,omitempty"`           // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
-	Scroll            bool          `json:"scroll,omitempty"`              // Used by [breakLoop]. True = to scroll. False = don't scroll.
-	ScrollCount       int           `json:"scroll_count,omitempty"`        // Total number of times [Processor.ElementScroll()] called
+	Elements          *rod.Elements `json:"Elements"`          // Result of [Processor.V020_Elements()]
+	ElementLast       *rod.Element  `json:"ElementLast"`       // Last element of the previous scroll loop iteration
+	ElementLastScroll *rod.Element  `json:"ElementLastScroll"` // Element used for previous scroll (not necessary last loop iteration)
+	ElementCountLast  int           `json:"ElementCountLast"`  // Number of elements of previous loop iteration
+	InfoLast          IInfo         `json:"InfoLast"`          // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
+	Scroll            bool          `json:"Scroll"`            // Used by [breakLoop]. True = to scroll. False = don't scroll.
+	ScrollCount       int           `json:"ScrollCount"`       // Total number of times [Processor.ElementScroll()] called
 }
 
 func (s *State) New() *State {

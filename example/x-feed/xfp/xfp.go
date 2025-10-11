@@ -35,8 +35,8 @@ type XFeedInfo struct {
 	is.InfoBase // (1.1) REQUIRED: embed [is.InfoBase] to get [is.IInfo] interface
 
 	// Added fields
-	User string `json:"user,omitempty"`
-	Text string `json:"text,omitempty"`
+	User string `json:"User"`
+	Text string `json:"Text"`
 }
 
 // (1.1) REQUIRED: embed `is.InfoBase` for `is.IInfo` interface

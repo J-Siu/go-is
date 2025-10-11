@@ -2,6 +2,23 @@
 
 An infinite scroll processing package using [go-rod/rod](https://github.com/go-rod/rod).
 
+- [Creating an IS app](#creating-an-is-app)
+  - [Example](#example)
+- [How to Use](#how-to-use)
+  - [(1.1) Create Your Info Struct](#11-create-your-info-struct)
+  - [(1.2) Create Your Processor Struct](#12-create-your-processor-struct)
+  - [(1.3.3) Override Process Struct field functions](#133-override-process-struct-field-functions)
+  - [(2.1) Property Struct](#21-property-struct)
+  - [(2.4) Processing Flow inside Run()](#24-processing-flow-inside-run)
+- [Logging](#logging)
+- [Use What is Needed](#use-what-is-needed)
+  - [Info and IInfoList](#info-and-iinfolist)
+  - [The Element Functions](#the-element-functions)
+  - [Change Log](#change-log)
+  - [License](#license)
+
+<!-- more -->
+
 ## Creating an IS app
 
 A basic workflow of creating a infinite scroll processor with `IS`.
@@ -220,6 +237,8 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
   - Update go-helper/v2, go-dtquery
 - v1.1.7
   - Add version const
+- v1.1.8
+  - Update go-helper/v2, go-dtquery
 
 ### License
 
