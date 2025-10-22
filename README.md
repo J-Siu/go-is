@@ -217,29 +217,6 @@ The `info` struct and `IInfoList` provide a basic means to store and process inf
 
 `V030_ElementInfo`, `V040_ElementMatch`, `V050_ElementProcessMatched`, `V060_ElementProcessUnmatch`, `V070_ElementProcess`
 
-### Change Log
-
-- v1.0.0
-  - Initial commit
-- v1.1.0
-  - Update ezlog
-- v1.1.1
-  - Update `go-helper`, `go-dtquery`
-- v1.1.2
-  - Update go-helper/v2
-- v1.1.3
-  - Update go-helper/v2
-- v1.1.4
-  - Update go-helper/v2, go-dtquery
-- v1.1.5
-  - Update go-helper/v2, go-dtquery
-- v1.1.6
-  - Update go-helper/v2, go-dtquery
-- v1.1.7
-  - Add version const
-- v1.1.8
-  - Update go-helper/v2, go-dtquery
-
 ### License
 
 The MIT License (MIT)
