@@ -18,3 +18,5 @@
   - Add version const
 - v1.1.8
   - Update go-helper/v2, go-dtquery
+- v1.1.9
+  - Update go-helper/v2, go-dtquery

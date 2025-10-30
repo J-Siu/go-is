@@ -36,16 +36,27 @@ import (
 func main() {
 
 	// Select log level
-	ezlog.SetLogLevel(ezlog.ERR)
+	// ezlog.SetLogLevel(ezlog.ERR)
 	// ezlog.SetLogLevel(ezlog.DebugLevel)
-	// ezlog.SetLogLevel(ezlog.TRACE)
+	ezlog.SetLogLevel(ezlog.TRACE)
 
-	var x *xfp.XFeedProcessor
+	var (
+		err      error
+		page     *rod.Page
+		property is.Property
+		x        *xfp.XFeedProcessor
+	)
 
-	page, err := getTab("localhost", 9222)
+	page, err = getTab("localhost", 9222)
+	ezlog.Trace().N("page").M(page).Out()
+	if err == nil {
+		if page == nil {
+			err = errors.New("page is nil")
+		}
+	}
 	if err == nil {
 		// (2.1) Prepare a `is.Property` object, populate field as needed
-		property := is.Property{
+		property = is.Property{
 			Page:      page,              // (2.1) REQUIRED: populate `Page` field (a `*rod.Page`, representing a browser tab)
 			IInfoList: new(is.IInfoList), // Initialize this to use build-in info array
 			ScrollMax: 5,                 // number of time we will scroll, -1 for infinite (default: 0)
@@ -58,17 +69,17 @@ func main() {
 
 		// (2.3) Initialize the `processor` struct with the `property`
 		x.New(&property)
-
+		err = x.Err
+	}
+	if err == nil {
 		// (2.4) Call `Run`
 		x.Run()
-
 		err = x.Err
 	}
 	if err == nil {
 		// (2.5) Output result
 		x.IInfoList.Print(is.PrintAll)
-	}
-	if err != nil {
+	} else {
 		ezlog.Err().M(err).Out()
 	}
 }
@@ -90,13 +101,14 @@ func getTab(host string, port int) (page *rod.Page, err error) {
 
 	// setup [rod]
 	if err == nil {
-		browser = rod.New().ControlURL(devtools.Ver.WsUrl)
+		browser = rod.New().ControlURL(devtools.DT_Url)
 		err = browser.Connect()
 	}
 	if err == nil {
 		pages, err = browser.NoDefaultDevice().Pages()
 	}
 	if err == nil {
+		ezlog.Trace().N(prefix).N("pages").M(pages).Out()
 		page = pages.First()
 		if page != nil {
 			page.Activate()

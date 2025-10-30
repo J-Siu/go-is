@@ -23,5 +23,5 @@ THE SOFTWARE.
 package is
 
 const (
-	Version = "v1.1.8"
+	Version = "v1.1.9"
 )
