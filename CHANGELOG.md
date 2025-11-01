@@ -1,22 +1,24 @@
 - v1.0.0
   - Initial commit
 - v1.1.0
-  - Update ezlog
+  - update ezlog
 - v1.1.1
-  - Update `go-helper`, `go-dtquery`
+  - update `go-helper`, `go-dtquery`
 - v1.1.2
-  - Update go-helper/v2
+  - update go-helper/v2
 - v1.1.3
-  - Update go-helper/v2
+  - update go-helper/v2
 - v1.1.4
-  - Update go-helper/v2, go-dtquery
+  - update go-helper/v2, go-dtquery
 - v1.1.5
-  - Update go-helper/v2, go-dtquery
+  - update go-helper/v2, go-dtquery
 - v1.1.6
-  - Update go-helper/v2, go-dtquery
+  - update go-helper/v2, go-dtquery
 - v1.1.7
-  - Add version const
+  - add version const
 - v1.1.8
-  - Update go-helper/v2, go-dtquery
+  - update go-helper/v2, go-dtquery
 - v1.1.9
-  - Update go-helper/v2, go-dtquery
+  - update go-helper/v2, go-dtquery
+- v1.1.10
+  - update go-helper/v2, go-dtquery

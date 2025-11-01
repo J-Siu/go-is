@@ -100,7 +100,7 @@ func (x *XFeedProcessor) override() {
 		if err == nil && e != nil {
 			info.Text = e.MustText()
 		}
-		ezlog.Debug().N(prefix).Nn("info").M(info).Out()
+		ezlog.Debug().N(prefix).N("info").Lm(info).Out()
 
 		ezlog.Trace().N(prefix).TxtEnd().Out()
 		return info

@@ -14,7 +14,6 @@ An infinite scroll processing package using [go-rod/rod](https://github.com/go-r
 - [Use What is Needed](#use-what-is-needed)
   - [Info and IInfoList](#info-and-iinfolist)
   - [The Element Functions](#the-element-functions)
-  - [Change Log](#change-log)
   - [License](#license)
 
 <!-- more -->

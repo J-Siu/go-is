@@ -222,7 +222,7 @@ func (p *Processor) setFunc() {
 			if ezlog.GetLogLevel() == ezlog.TRACE {
 				msg := "scrollMax: " + strconv.Itoa(p.ScrollMax) + "\n"
 				msg += "breakLoop: " + "!(state.Scroll && (state.ScrollCount <= scrollMax || scrollMax < 0)) = " + strconv.FormatBool(breakLoop)
-				ezlog.Trace().Nn(p.MyType + ".ScrollLoopBreak (base)").Mn(state.String()).M(&msg).Out()
+				ezlog.Trace().N(p.MyType + ".ScrollLoopBreak (base)").Lm(state.String()).Lm(&msg).Out()
 			}
 			return breakLoop
 		}
