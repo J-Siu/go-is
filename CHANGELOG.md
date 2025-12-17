@@ -22,3 +22,5 @@
   - update go-helper/v2, go-dtquery
 - v1.1.10
   - update go-helper/v2, go-dtquery
+- v1.1.11
+  - update go-helper/v2, go-dtquery
