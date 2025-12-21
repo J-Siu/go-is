@@ -26,7 +26,7 @@ package xfp
 
 import (
 	"github.com/J-Siu/go-helper/v2/ezlog"
-	"github.com/J-Siu/go-is"
+	"github.com/J-Siu/go-is/v2/is"
 	"github.com/go-rod/rod"
 )
 
@@ -48,34 +48,34 @@ type XFeedProcessor struct {
 }
 
 // (1.3) Write package/struct level `New` function. Must accept `*is.Property` as one of its arguments.
-func (x *XFeedProcessor) New(
+func (t *XFeedProcessor) New(
 	property *is.Property, // (1.3) REQUIRED: `*is.Property` as one of its arguments
 ) *XFeedProcessor {
-	x.Processor = is.New(property) // (1.3) REQUIRED: use [is.New] to create and initialize the embedded [*is.Processor]
-	x.MyType = "xf"                // Optional: features of [basestruct.Base] embedded in [is.Processor]
-	x.override()                   // (1.3) Override `is.Processor` field functions as needed
-	return x
+	t.Processor = is.New(property) // (1.3) REQUIRED: use [is.New] to create and initialize the embedded [*is.Processor]
+	t.MyType = "xf"                // Optional: features of [basestruct.Base] embedded in [is.Processor]
+	t.override()                   // (1.3) Override `is.Processor` field functions as needed
+	return t
 }
 
 // (1.3) Override `is.Processor` field functions as needed
-func (x *XFeedProcessor) override() {
-	x.V020_Elements = func(element *rod.Element) *rod.Elements {
-		prefix := x.MyType + ".V020"
+func (t *XFeedProcessor) override() {
+	t.V020_Elements = func(element *rod.Element) *rod.Elements {
+		prefix := t.MyType + ".V020"
 		ezlog.Trace().N(prefix).TxtStart().Out()
 		var es rod.Elements
 		tagName := "article"
 		if element == nil {
-			es = x.Page.MustElements(tagName)
+			es = t.Page.MustElements(tagName)
 		} else {
 			es = element.MustElements(tagName)
 		}
 		ezlog.Trace().N(prefix).TxtEnd().Out()
 		return &es
 	}
-	x.V030_ElementInfo = func(element *rod.Element, index int) is.IInfo {
-		prefix := x.MyType + ".V030"
+	t.V030_ElementInfo = func() is.IInfo {
+		prefix := t.MyType + ".V030"
 		ezlog.Trace().N(prefix).TxtStart().Out()
-		ezlog.Trace().M(element.MustHTML()).Out()
+		ezlog.Trace().M(t.StateCurr.Element.MustHTML()).Out()
 		info := new(XFeedInfo)
 		var (
 			err error
@@ -85,7 +85,7 @@ func (x *XFeedProcessor) override() {
 
 		// Username
 		tag = "[data-testid='User-Name']"
-		e, err = element.Element(tag)
+		e, err = t.StateCurr.Element.Element(tag)
 		if err == nil && e != nil {
 			tag = "a"
 			e, err = e.Element(tag)
@@ -96,7 +96,7 @@ func (x *XFeedProcessor) override() {
 
 		// Tweet text
 		tag = "[data-testid='tweetText']"
-		e, err = element.Element(tag)
+		e, err = t.StateCurr.Element.Element(tag)
 		if err == nil && e != nil {
 			info.Text = e.MustText()
 		}

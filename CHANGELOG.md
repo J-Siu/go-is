@@ -24,3 +24,9 @@
   - update go-helper/v2, go-dtquery
 - v1.1.11
   - update go-helper/v2, go-dtquery
+- v2.0.0
+  - use package folder `is`
+  - `Processor`
+    - cleanup `Run` loop
+    - remove state related parameters from member functions
+    - use `StateCurr` and `StatePrev` to hold current and previous iteration state information

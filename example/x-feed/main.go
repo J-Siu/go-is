@@ -27,16 +27,15 @@ import (
 
 	"github.com/J-Siu/go-dtquery/dq"
 	"github.com/J-Siu/go-helper/v2/ezlog"
-	"github.com/J-Siu/go-is"
-	"github.com/J-Siu/go-is/example/x-feed/xfp"
+	"github.com/J-Siu/go-is/v2/example/x-feed/xfp"
+	"github.com/J-Siu/go-is/v2/is"
 	"github.com/go-rod/rod"
 )
 
 // (2) Write `main`
 func main() {
 
-	// Select log level
-	// ezlog.SetLogLevel(ezlog.ERR)
+	// -- Select log level
 	// ezlog.SetLogLevel(ezlog.DebugLevel)
 	ezlog.SetLogLevel(ezlog.TRACE)
 
@@ -59,7 +58,7 @@ func main() {
 		property = is.Property{
 			Page:      page,              // (2.1) REQUIRED: populate `Page` field (a `*rod.Page`, representing a browser tab)
 			IInfoList: new(is.IInfoList), // Initialize this to use build-in info array
-			ScrollMax: 5,                 // number of time we will scroll, -1 for infinite (default: 0)
+			ScrollMax: 10,                // number of time we will scroll, -1 for infinite (default: 0)
 			UrlLoad:   true,
 			UrlStr:    "https://x.com/home",
 		}

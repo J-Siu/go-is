@@ -22,6 +22,9 @@ THE SOFTWARE.
 
 package is
 
-const (
-	Version = "v1.1.11"
-)
+// Parameters:
+//   - property *Property
+//
+// Returns:
+//   - *Processor
+func New(property *Property) *Processor { return new(Processor).New(property) }
