@@ -30,3 +30,5 @@
     - cleanup `Run` loop
     - remove state related parameters from member functions
     - use `StateCurr` and `StatePrev` to hold current and previous iteration state information
+- v2.0.1
+  - fix IInfoList output
