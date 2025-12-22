@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	github.com/J-Siu/go-dtquery v1.2.2
-	github.com/J-Siu/go-helper/v2 v2.6.5
+	github.com/J-Siu/go-helper/v2 v2.6.6
 	github.com/go-rod/rod v0.116.2
 )
 
