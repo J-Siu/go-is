@@ -51,25 +51,25 @@ type InfoBase struct {
 }
 
 // Get matched bool value
-func (s *InfoBase) Matched() bool { return s.matched }
+func (t *InfoBase) Matched() bool { return t.matched }
 
 // Get matched string value
-func (s *InfoBase) MatchedStr() string { return s.matchedStr }
+func (t *InfoBase) MatchedStr() string { return t.matchedStr }
 
 // Set matched bool value
-func (s *InfoBase) SetMatched(matched bool) { s.matched = matched }
+func (t *InfoBase) SetMatched(matched bool) { t.matched = matched }
 
 // Set matched string value
-func (s *InfoBase) SetMatchedStr(matchedStr string) { s.matchedStr = matchedStr }
+func (t *InfoBase) SetMatchedStr(matchedStr string) { t.matchedStr = matchedStr }
 
 // Place holder only
-func (s *InfoBase) String() string { return "String() placeholder!" }
+func (t *InfoBase) String() string { return "String() placeholder!" }
 
 type IInfoList []IInfo
 
-func (list *IInfoList) Print(mode IInfoListPrintMode) {
+func (t *IInfoList) Print(mode IInfoListPrintMode) {
 	var mark string
-	for c, info := range *list {
+	for c, info := range *t {
 		mark = "[ ]"
 		if info.Matched() {
 			mark = "[X]"
