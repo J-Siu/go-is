@@ -27,8 +27,8 @@ import (
 
 	"github.com/J-Siu/go-dtquery/dq"
 	"github.com/J-Siu/go-helper/v2/ezlog"
-	"github.com/J-Siu/go-is/v2/example/x-feed/xfp"
-	"github.com/J-Siu/go-is/v2/is"
+	"github.com/J-Siu/go-is/v3/example/x-feed/xfp"
+	"github.com/J-Siu/go-is/v3/is"
 	"github.com/go-rod/rod"
 )
 

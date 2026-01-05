@@ -1,4 +1,4 @@
-module github.com/J-Siu/go-is/v2
+module github.com/J-Siu/go-is/v3
 
 go 1.25.5
 

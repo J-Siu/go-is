@@ -32,3 +32,12 @@
     - use `StateCurr` and `StatePrev` to hold current and previous iteration state information
 - v2.0.1
   - fix IInfoList output
+- v3.0.0
+  - Info: minor update
+  - Processor
+    - consolidate member functions signature
+    - consolidate start/end debug output with funcWrapper()
+    - member functions, instead of parameters, use StateCurr
+  - State: consolidate and cleanup state fields
+  - update example
+  - update go-helper
