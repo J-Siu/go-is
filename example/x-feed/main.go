@@ -36,8 +36,8 @@ import (
 func main() {
 
 	// -- Select log level
-	// ezlog.SetLogLevel(ezlog.DebugLevel)
-	ezlog.SetLogLevel(ezlog.TRACE)
+	ezlog.SetLogLevel(ezlog.DEBUG)
+	// ezlog.SetLogLevel(ezlog.TRACE)
 
 	var (
 		err      error
@@ -56,8 +56,8 @@ func main() {
 	if err == nil {
 		// (2.1) Prepare a `is.Property` object, populate field as needed
 		property = is.Property{
-			Page:      page,              // (2.1) REQUIRED: populate `Page` field (a `*rod.Page`, representing a browser tab)
 			IInfoList: new(is.IInfoList), // Initialize this to use build-in info array
+			Page:      page,              // (2.1) REQUIRED: populate `Page` field (a `*rod.Page`, representing a browser tab)
 			ScrollMax: 10,                // number of time we will scroll, -1 for infinite (default: 0)
 			UrlLoad:   true,
 			UrlStr:    "https://x.com/home",

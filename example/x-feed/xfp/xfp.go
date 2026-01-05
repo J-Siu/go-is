@@ -59,50 +59,51 @@ func (t *XFeedProcessor) New(
 
 // (1.3) Override `is.Processor` field functions as needed
 func (t *XFeedProcessor) override() {
-	t.V020_Elements = func(element *rod.Element) *rod.Elements {
-		prefix := t.MyType + ".V020"
-		ezlog.Trace().N(prefix).TxtStart().Out()
-		var es rod.Elements
-		tagName := "article"
-		if element == nil {
-			es = t.Page.MustElements(tagName)
-		} else {
-			es = element.MustElements(tagName)
-		}
-		ezlog.Trace().N(prefix).TxtEnd().Out()
-		return &es
+	t.V020_Elements = t.override_V20
+	t.V030_ElementInfo = t.override_V30
+}
+
+func (t *XFeedProcessor) override_V20() {
+	prefix := t.MyType + ".V020"
+	t.StateCurr.Name = prefix
+	var es rod.Elements
+	tagName := "article"
+	if t.StateCurr.Element == nil {
+		es = t.Page.MustElements(tagName)
+	} else {
+		es = t.StateCurr.Element.MustElements(tagName)
 	}
-	t.V030_ElementInfo = func() is.IInfo {
-		prefix := t.MyType + ".V030"
-		ezlog.Trace().N(prefix).TxtStart().Out()
-		ezlog.Trace().M(t.StateCurr.Element.MustHTML()).Out()
-		info := new(XFeedInfo)
-		var (
-			err error
-			e   *rod.Element
-			tag string
-		)
+	t.StateCurr.Elements = es
+}
 
-		// Username
-		tag = "[data-testid='User-Name']"
-		e, err = t.StateCurr.Element.Element(tag)
+func (t *XFeedProcessor) override_V30() {
+	prefix := t.MyType + ".V030"
+	t.StateCurr.Name = prefix
+	ezlog.Trace().M(t.StateCurr.Element.MustHTML()).Out()
+	info := new(XFeedInfo)
+	var (
+		err error
+		e   *rod.Element
+		tag string
+	)
+
+	// Username
+	tag = "[data-testid='User-Name']"
+	e, err = t.StateCurr.Element.Element(tag)
+	if err == nil && e != nil {
+		tag = "a"
+		e, err = e.Element(tag)
 		if err == nil && e != nil {
-			tag = "a"
-			e, err = e.Element(tag)
-			if err == nil && e != nil {
-				info.User = e.MustText()
-			}
+			info.User = e.MustText()
 		}
-
-		// Tweet text
-		tag = "[data-testid='tweetText']"
-		e, err = t.StateCurr.Element.Element(tag)
-		if err == nil && e != nil {
-			info.Text = e.MustText()
-		}
-		ezlog.Debug().N(prefix).N("info").Lm(info).Out()
-
-		ezlog.Trace().N(prefix).TxtEnd().Out()
-		return info
 	}
+
+	// Tweet text
+	tag = "[data-testid='tweetText']"
+	e, err = t.StateCurr.Element.Element(tag)
+	if err == nil && e != nil {
+		info.Text = e.MustText()
+	}
+	ezlog.Debug().N(prefix).N("info").Lm(info).Out()
+	t.StateCurr.ElementInfo = info
 }
