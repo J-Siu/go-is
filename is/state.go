@@ -24,6 +24,7 @@ package is
 
 import (
 	"github.com/J-Siu/go-helper/v2/basestruct"
+	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/go-rod/rod"
 )
 
@@ -35,25 +36,30 @@ import (
 // At the bottom of 'Run()' scroll loop, it is passed into [Processor.V100_ScrollLoopEnd()] for customized scroll calculation.
 type State struct {
 	*basestruct.Base
-	Elements               *rod.Elements `json:"-"`                      // Result of [Processor.V020_Elements()]
-	ElementsCount          int           `json:"ElementsCount"`          // Number of elements in current iteration
-	Element                *rod.Element  `json:"Element"`                // Element being process
-	ElementIndex           int           `json:"ElementIndex"`           // Index of element being process
-	ElementInfo            IInfo         `json:"ElementInfo"`            // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
-	ScrollableElement      *rod.Element  `json:"ScrollableElement"`      // Last scrollable element
-	ScrollableElementIndex int           `json:"ScrollableElementIndex"` // Index of element being process
-	ScrollableElementInfo  IInfo         `json:"ScrollableElementInfo"`  // [Info] of [ElementScrollable].
-	Scroll                 bool          `json:"Scroll"`                 // Used by [breakLoop]. True = to scroll. False = don't scroll.
-	ScrollCount            int           `json:"ScrollCount"`            // Total number of times [Processor.ElementScroll()] called
+	Element                *rod.Element `json:"Element"`                // Element being process
+	ElementIndex           int          `json:"ElementIndex"`           // Index of element being process
+	ElementInfo            IInfo        `json:"ElementInfo"`            // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
+	Elements               rod.Elements `json:"-"`                      // Result of [Processor.V020_Elements()]
+	ElementsCount          int          `json:"ElementsCount"`          // Number of elements in current iteration
+	Name                   string       `json:"FuncName"`               // current function/state name
+	Scroll                 bool         `json:"Scroll"`                 // update by ScrollCalculation. Used by [breakLoop]. True = to scroll. False = don't scroll.
+	ScrollCount            int          `json:"ScrollCount"`            // Total number of times [Processor.ElementScroll()] called
+	ScrollLoop             bool         `json:"ScrollLoop"`             // update by ScrollLoop
+	Scrollable             bool         `json:"Scrollable"`             // update by V080_ElementScrollable
+	ScrollableElement      *rod.Element `json:"ScrollableElement"`      // Last scrollable element
+	ScrollableElementIndex int          `json:"ScrollableElementIndex"` // Index of element being process
+	ScrollableElementInfo  IInfo        `json:"ScrollableElementInfo"`  // [Info] of [ElementScrollable].
 }
 
 func (t *State) New(scrollCount int) *State {
 	t.Base = new(basestruct.Base)
 	t.MyType = "State"
+	prefix := t.MyType + ".New"
 	t.Initialized = true
-
 	// 'Scroll' need to be init, as the default value is 'false'
 	t.Scroll = true
+	t.ScrollLoop = true
 	t.ScrollCount = scrollCount
+	ezlog.Debug().M(prefix).Out()
 	return t
 }
