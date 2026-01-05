@@ -31,10 +31,12 @@ import (
 	"github.com/go-rod/rod"
 )
 
+type ProcessorFunc func()
+
 // IS processor structure
 type Processor struct {
-	*basestruct.Base
-	*Property
+	basestruct.Base
+	Property
 
 	StateCurr *State
 	StatePrev *State
@@ -44,12 +46,12 @@ type Processor struct {
 	// Load [UrlStr] into [Page]
 	//
 	// No override needed.
-	LoadPage func() `json:"-"`
+	LoadPage ProcessorFunc `json:"-"`
 
 	// Determine whether the scroll loop should continue running
 	//
 	// No override needed.
-	ScrollLoop func() bool `json:"-"`
+	ScrollLoop func() `json:"-"`
 
 	// Detect end of page, scroll no longer possible.
 	//
@@ -57,7 +59,7 @@ type Processor struct {
 	//
 	// If elements are removed during [Run()], overload [V100_ExitScroll()] to do custom override.
 	// As both of following checks can be flawed if elements are removed from page DOM.
-	ScrollCalculation func() (scroll bool) `json:"-"`
+	ScrollCalculation ProcessorFunc `json:"-"`
 
 	// Use [MustScrollIntoView] on [element]
 	//
@@ -71,70 +73,72 @@ type Processor struct {
 	// build-in behavior is to return [property.Container]
 	//
 	// Override if needed
-	V010_Container func() (container *rod.Element) `json:"-"`
+	V010_Container ProcessorFunc `json:"-"`
 
-	// Return collection of repeating elements within [property.Page] or [property.Container]
+	// Put collection of repeating elements within [property.Page] or [property.Container] into [StateCurr.Elements]
 	//
 	// build-in behavior is to return `nil`
 	//
 	// **Must override**
-	V020_Elements func(container *rod.Element) *rod.Elements `json:"-"`
+	V020_Elements ProcessorFunc `json:"-"`
 
 	// Extract information from [element] and put into an [IInfo] structure and return it.
 	//
 	// build-in behavior is to return `nil`
 	//
 	// **Must override**
-	V030_ElementInfo func() (info IInfo) `json:"-"`
+	V030_ElementInfo ProcessorFunc `json:"-"`
 
 	// Determine [element] is a match or not base on [info]
 	//
-	// build-in behavior is to return (`true`, `""`)
+	// Update [StateCurr.ElementInfoMatched] and [StateCurr.ElementInfoMatchedStr]
+	//
+	// build-in behavior (`true`, `""`)
 	//
 	// Override if needed
-	V040_ElementMatch func() (matched bool, matchedStr string) `json:"-"`
+	V040_ElementMatch ProcessorFunc `json:"-"`
 
 	// Do some processing (eg, print, write to file, db, etc) if [element] is a match
 	//
 	// build-in behavior is to do nothing
 	//
 	// Override if needed
-	V050_ElementProcessMatched func() `json:"-"`
+	V050_ElementProcessMatched ProcessorFunc `json:"-"`
 
 	// Do some processing (eg, print, write to file, db, etc) if [element] is not a match
 	//
 	// build-in behavior is to do nothing
 	//
 	// Override if needed
-	V060_ElementProcessUnmatch func() `json:"-"`
+	V060_ElementProcessUnmatch ProcessorFunc `json:"-"`
 
 	// Do some processing (eg, print, write to file, db, etc) regardless [element] is a match or not
 	//
 	// build-in behavior is to do nothing
 	//
 	// Override if needed
-	V070_ElementProcess func() `json:"-"`
+	V070_ElementProcess ProcessorFunc `json:"-"`
 
 	// If current element is scrollable
 	//
 	// build-in behavior is to return `true``
 	//
 	// Override if needed
-	V080_ElementScrollable func() bool `json:"-"`
+	V080_ElementScrollable ProcessorFunc `json:"-"`
 
 	// Do some processing if required
 	//
 	// build-in behavior is to do nothing
 	//
 	// Override if needed
-	V090_ElementLoopEnd func() `json:"-"`
+	V090_ElementLoopEnd ProcessorFunc `json:"-"`
 
 	// Do some processing if required
 	//
 	// build-in behavior is to do nothing
 	//
 	// Override if needed
-	V100_ScrollLoopEnd func() `json:"-"`
+	V100_ScrollLoopEnd ProcessorFunc `json:"-"`
 }
 
 // Parameters:
@@ -143,7 +147,6 @@ type Processor struct {
 // Returns:
 //   - *Processor
 func (t *Processor) New(property *Property) *Processor {
-	t.Base = new(basestruct.Base)
 	t.MyType = "is.Processor"
 	prefix := t.MyType + ".New" + "(base)"
 
@@ -152,12 +155,20 @@ func (t *Processor) New(property *Property) *Processor {
 	} else if property.Page == nil {
 		t.Err = errors.New("is.New: page/tab cannot be nil")
 	} else {
-		t.Property = property
+		t.Property = *property
+		t.StateCurr = new(State).New(0)
 		t.setFunc()
 		t.Initialized = true
 	}
 
 	ezlog.Trace().N(prefix).M("Done").Out()
+	return t
+}
+
+func (t *Processor) funcWrapper(name string, f ProcessorFunc) *Processor {
+	ezlog.Debug().N(name).TxtStart().Out()
+	f()
+	ezlog.Debug().N(t.StateCurr.Name).TxtEnd().Out()
 	return t
 }
 
@@ -167,67 +178,63 @@ func (t *Processor) New(property *Property) *Processor {
 func (t *Processor) Run() {
 	prefix := t.MyType + ".Run" + "(base)"
 	if t.CheckErrInit(prefix) {
-		t.LoadPage()
+		t.funcWrapper(t.MyType+".LoadPage", t.LoadPage)
 	}
 	if t.Err == nil {
 		// Initial container
-		t.Container = t.V010_Container()
+		t.funcWrapper(t.MyType+".V010", t.V010_Container)
 		// Scroll Loop
-		for t.ScrollLoop() {
+		for t.StateCurr.ScrollLoop {
 			// -- SCROLL LOOP - START
 			t.StatePrev = t.StateCurr
 			if t.StatePrev != nil {
-				if t.StatePrev.ScrollableElement != nil {
-					t.ScrollElement(t.StatePrev.ScrollableElement)
-				}
-			} else {
-				t.StatePrev = new(State).New(0)
+				t.ScrollElement(t.StatePrev.ScrollableElement)
 			}
 			t.StateCurr = new(State).New(t.StatePrev.ScrollCount)
 			// -- Get elements
 			t.StateCurr.ElementsCount = 0
-			t.StateCurr.Elements = t.V020_Elements(t.Container)
+			t.funcWrapper(t.MyType+".V020", t.V020_Elements)
 
 			if t.StateCurr.Elements == nil {
 				t.StateCurr.Scroll = false // no element, no scroll
 			} else {
-				t.StateCurr.ElementsCount = len(*t.StateCurr.Elements)
+				t.StateCurr.ElementsCount = len(t.StateCurr.Elements)
 				ezlog.Trace().N(prefix).N("elements count").M(t.StateCurr.ElementsCount).Out()
 				for index := t.StatePrev.ElementsCount; index < t.StateCurr.ElementsCount; index++ {
 					// -- ELEMENTS LOOP - START
-					t.StateCurr.Element = (*t.StateCurr.Elements)[index]
+					t.StateCurr.Element = (t.StateCurr.Elements)[index]
 					t.StateCurr.ElementIndex = index
-					t.StateCurr.ElementInfo = t.V030_ElementInfo()
-					matched, matchedStr := t.V040_ElementMatch()
+					t.StateCurr.ElementInfo = nil
+					t.funcWrapper(t.MyType+".V030", t.V030_ElementInfo)
 					if t.StateCurr.ElementInfo != nil {
-						// Remove burden from package user
-						t.StateCurr.ElementInfo.SetMatched(matched)
-						t.StateCurr.ElementInfo.SetMatchedStr(matchedStr)
+						t.funcWrapper(t.MyType+".V040", t.V040_ElementMatch)
+						if t.StateCurr.ElementInfo.Matched() {
+							t.funcWrapper(t.MyType+".V050", t.V050_ElementProcessMatched)
+						} else {
+							t.funcWrapper(t.MyType+".V060", t.V060_ElementProcessUnmatch)
+						}
 					}
-					if matched {
-						t.V050_ElementProcessMatched()
-					} else {
-						t.V060_ElementProcessUnmatch()
-					}
-					t.V070_ElementProcess()
+					t.funcWrapper(t.MyType+".V070", t.V070_ElementProcess)
 					// info list
 					if t.IInfoList != nil && t.StateCurr.ElementInfo != nil {
 						*t.IInfoList = append(*t.IInfoList, t.StateCurr.ElementInfo)
 					}
-					if t.V080_ElementScrollable() {
+					t.funcWrapper(t.MyType+".V080", t.V080_ElementScrollable)
+					if t.StateCurr.Scroll {
 						t.StateCurr.ScrollableElement = t.StateCurr.Element
 						t.StateCurr.ScrollableElementIndex = t.StateCurr.ElementIndex
 						t.StateCurr.ScrollableElementInfo = t.StateCurr.ElementInfo
 					}
-					t.V090_ElementLoopEnd()
+					t.funcWrapper(t.MyType+".V090", t.V090_ElementLoopEnd)
 					// -- ELEMENTS LOOP - END
 				}
-				t.StateCurr.Scroll = t.ScrollCalculation()
+				t.funcWrapper(t.MyType+".VScrollCalculation", t.ScrollCalculation)
 			}
 
-			t.V100_ScrollLoopEnd()
+			t.funcWrapper(t.MyType+".V100", t.V100_ScrollLoopEnd)
 			t.StateCurr.ScrollCount++
 			// -- SCROLL LOOP - END
+			t.funcWrapper(t.MyType+".ScrollLoop", t.ScrollLoop)
 		}
 	}
 }
@@ -254,7 +261,7 @@ func (t *Processor) setFunc() {
 
 func (t *Processor) base_LoadPage() {
 	prefix := t.MyType + ".LoadPage" + "(base)"
-	ezlog.Trace().N(prefix).TxtStart().Out()
+	t.StateCurr.Name = prefix
 	if t.CheckErrInit(prefix) {
 		if t.UrlLoad {
 			ezlog.Debug().N(prefix).N("urlStr").M(t.UrlStr).Out()
@@ -270,12 +277,14 @@ func (t *Processor) base_LoadPage() {
 			ezlog.Err().M(t.Err).Out()
 		}
 	}
-	ezlog.Trace().N(prefix).TxtEnd().Out()
 }
 
-func (t *Processor) base_ScrollCalculation() (scroll bool) {
+func (t *Processor) base_ScrollCalculation() {
 	prefix := t.MyType + ".ScrollCalculation" + "(base)"
-	scroll = t.StateCurr.Scroll
+	t.StateCurr.Name = prefix
+	var (
+		scroll = t.StateCurr.Scroll
+	)
 	/*
 		"if (elementsCount == elementsCountLast)":
 			will be triggered, if number of elements removed
@@ -293,12 +302,12 @@ func (t *Processor) base_ScrollCalculation() (scroll bool) {
 		}
 	}
 	ezlog.Trace().N(prefix).M("Done").Out()
-	return scroll
+	t.StateCurr.Scroll = scroll
 }
 
 func (t *Processor) base_ScrollElement(element *rod.Element) {
 	prefix := t.MyType + ".ScrollElement" + "(base)"
-	ezlog.Trace().N(prefix).TxtStart().Out()
+	ezlog.Debug().N(prefix).TxtStart().Out()
 	if element != nil {
 		element.MustScrollIntoView()
 		ezlog.Trace().N(prefix).M("Scrolled").Out()
@@ -306,74 +315,89 @@ func (t *Processor) base_ScrollElement(element *rod.Element) {
 		t.Page.MustWaitDOMStable()
 		// ezlog.Trace().N(prefix).N("MustWaitDOMStable").TxtEnd().Out()
 	}
-	ezlog.Trace().N(prefix).TxtEnd().Out()
+	ezlog.Debug().N(prefix).TxtEnd().Out()
 }
 
-func (t *Processor) base_ScrollLoop() (scroll bool) {
+func (t *Processor) base_ScrollLoop() {
 	prefix := t.MyType + ".ScrollLoop" + "(base)"
-	scroll = t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))
-	if ezlog.GetLogLevel() == ezlog.TRACE {
-		ezlog.Trace().N(prefix).
+	t.StateCurr.Name = prefix
+	var (
+		scrollLoop = t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))
+	)
+	if ezlog.GetLogLevel() == ezlog.DEBUG ||
+		ezlog.GetLogLevel() == ezlog.TRACE {
+		ezlog.
+			Debug().
+			// Trace().
+			N(prefix).
 			Ln("StateCurr").M(t.StateCurr).
 			Ln("scrollMax").M(t.ScrollMax).
-			Ln("scroll").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scroll).
+			Ln("scrollLoop").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scrollLoop).
 			Out()
 	}
-	return
+	t.StateCurr.ScrollLoop = scrollLoop
 }
 
-func (t *Processor) base_V010_Container() (container *rod.Element) {
+func (t *Processor) base_V010_Container() {
 	prefix := t.MyType + ".V010_Container" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Done").Out()
-	return t.Container
 }
 
-func (t *Processor) base_V020_Elements(container *rod.Element) *rod.Elements {
+func (t *Processor) base_V020_Elements() {
 	prefix := t.MyType + ".V020_Elements" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
-	return nil
 }
 
-func (t *Processor) base_V030_ElementInfo() (info IInfo) {
+func (t *Processor) base_V030_ElementInfo() {
 	prefix := t.MyType + ".V030_ElementInfo" + "(base)"
+	t.StateCurr.Name = prefix
+	t.StateCurr.ElementInfo = nil
 	ezlog.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
-	return nil
-
 }
 
-func (t *Processor) base_V040_ElementMatch() (matched bool, matchedStr string) {
+func (t *Processor) base_V040_ElementMatch() {
 	prefix := t.MyType + ".V040_ElementMatch" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing. Return `true`,\"\"").Out()
-	return true, ""
+	// t.StateCurr.ElementInfoMatched = true
+	// t.StateCurr.ElementInfoMatchedStr = ""
 }
 
 func (t *Processor) base_V050_ElementProcessMatched() {
 	prefix := t.MyType + ".V050_ElementProcessMatched" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing").Out()
 }
 
 func (t *Processor) base_V060_ElementProcessUnmatch() {
 	prefix := t.MyType + ".V060_ElementProcessUnmatch" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing").Out()
 }
 
 func (t *Processor) base_V070_ElementProcess() {
 	prefix := t.MyType + ".V070_ElementProcess" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing").Out()
 }
 
-func (t *Processor) base_V080_ElementScrollable() bool {
+func (t *Processor) base_V080_ElementScrollable() {
 	prefix := t.MyType + ".V080_ElementScrollable" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing. Return `true`").Out()
-	return true
+	t.StateCurr.Scrollable = true
 }
 
 func (t *Processor) base_V090_ElementLoopEnd() {
 	prefix := t.MyType + ".V090_ElementLoopEnd" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing").Out()
 }
 
 func (t *Processor) base_V100_ScrollLoopEnd() {
 	prefix := t.MyType + ".V100_ScrollLoopEnd" + "(base)"
+	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing").Out()
 }
