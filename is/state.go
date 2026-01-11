@@ -62,8 +62,7 @@ func (t *State) New(scrollCount int) *State {
 	t.MyType = "State"
 	prefix := t.MyType + ".New"
 	t.Initialized = true
-	// 'Scroll' need to be init, as the default value is 'false'
-	t.Scroll = true
+	t.Scroll = true // 'Scroll' need to be init, as the default value is 'false'
 	t.ScrollLoop = true
 	t.ScrollCount = scrollCount
 	t.ScrollableElementInfo = nil

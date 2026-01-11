@@ -169,6 +169,7 @@ func (t *Processor) funcWrapper(name string, f ProcessorFunc) *Processor {
 // No override needed.
 func (t *Processor) Run() {
 	prefix := t.MyType + ".Run" + "(base)"
+	ezlog.Debug().N(prefix).TxtStart().Out()
 	if t.CheckErrInit(prefix) {
 		t.funcWrapper(t.MyType+".LoadPage", t.LoadPage)
 	}
@@ -177,6 +178,7 @@ func (t *Processor) Run() {
 		t.funcWrapper(t.MyType+".V010", t.V010_Container)
 		// Scroll Loop
 		for t.StateCurr.ScrollLoop {
+			ezlog.Debug().N(prefix).N("SCROLL LOOP").TxtStart().Out()
 			// -- SCROLL LOOP - START
 			t.StatePrev = t.StateCurr
 			if t.StatePrev != nil {
@@ -193,6 +195,7 @@ func (t *Processor) Run() {
 				t.StateCurr.ElementsCount = len(t.StateCurr.Elements)
 				ezlog.Trace().N(prefix).N("elements count").M(t.StateCurr.ElementsCount).Out()
 				for index := t.StatePrev.ElementsCount; index < t.StateCurr.ElementsCount; index++ {
+					ezlog.Debug().N(prefix).N("ELEMENTS LOOP").TxtStart().Out()
 					// -- ELEMENTS LOOP - START
 					t.StateCurr.Element = (t.StateCurr.Elements)[index]
 					t.StateCurr.ElementIndex = index
@@ -219,11 +222,14 @@ func (t *Processor) Run() {
 					}
 					t.funcWrapper(t.MyType+".V090", t.V090_ElementLoopEnd)
 					// -- ELEMENTS LOOP - END
+					ezlog.Debug().N(prefix).N("ELEMENTS LOOP").TxtEnd().Out()
 				}
 			}
 			t.funcWrapper(t.MyType+".V100", t.V100_ScrollLoopEnd)
 			t.funcWrapper(t.MyType+".ScrollLoop", t.ScrollLoop)
 			t.StateCurr.ScrollCount++
+			// -- SCROLL LOOP - END
+			ezlog.Debug().N(prefix).N("SCROLL LOOP").TxtEnd().Out()
 		}
 	}
 }
