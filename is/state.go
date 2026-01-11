@@ -46,15 +46,15 @@ type State struct {
 	ElementIndex int          `json:"ElementIndex"` // Index of element being process
 	ElementInfo  IInfo        `json:"ElementInfo"`  // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
 	// --
-	ElementScrollable bool `json:"Scrollable"` // update by V080_ElementScrollable
+	ElementScrollable bool `json:"ElementScrollable"` // update by V080_ElementScrollable
 	// --
 	ScrollableElement      *rod.Element `json:"ScrollableElement"`      // Last scrollable element
 	ScrollableElementIndex int          `json:"ScrollableElementIndex"` // Index of element being process
 	ScrollableElementInfo  IInfo        `json:"ScrollableElementInfo"`  // [Info] of [ElementScrollable].
 	// --
-	Scroll      bool `json:"Scroll"`      // update by ScrollCalculation. Used by [breakLoop]. True = to scroll. False = don't scroll.
+	Scroll      bool `json:"Scroll"`      // True = to scroll. False = don't scroll.
 	ScrollCount int  `json:"ScrollCount"` // Total number of times [Processor.ElementScroll()] called
-	ScrollLoop  bool `json:"ScrollLoop"`  // update by ScrollLoop
+	ScrollPage  bool `json:"ScrollLoop"`  // update by ScrollLoop
 }
 
 func (t *State) New(scrollCount int) *State {
@@ -63,7 +63,7 @@ func (t *State) New(scrollCount int) *State {
 	prefix := t.MyType + ".New"
 	t.Initialized = true
 	t.Scroll = true // 'Scroll' need to be init, as the default value is 'false'
-	t.ScrollLoop = true
+	t.ScrollPage = true
 	t.ScrollCount = scrollCount
 	t.ScrollableElementInfo = nil
 	ezlog.Debug().M(prefix).Out()

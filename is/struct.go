@@ -177,7 +177,7 @@ func (t *Processor) Run() {
 		// Initial container
 		t.funcWrapper(t.MyType+".V010", t.V010_Container)
 		// Scroll Loop
-		for t.StateCurr.ScrollLoop {
+		for t.StateCurr.ScrollPage {
 			ezlog.Debug().N(prefix).N("SCROLL LOOP").TxtStart().Out()
 			// -- SCROLL LOOP - START
 			t.StatePrev = t.StateCurr
@@ -290,7 +290,7 @@ func (t *Processor) base_ScrollLoop() {
 	prefix := t.MyType + ".ScrollLoop" + "(base)"
 	t.StateCurr.Name = prefix
 	var (
-		scrollLoop = t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))
+		scrollPage = t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))
 	)
 	if ezlog.GetLogLevel() == ezlog.DEBUG ||
 		ezlog.GetLogLevel() == ezlog.TRACE {
@@ -300,10 +300,10 @@ func (t *Processor) base_ScrollLoop() {
 			N(prefix).
 			Ln("StateCurr").M(t.StateCurr).
 			Ln("scrollMax").M(t.ScrollMax).
-			Ln("scrollLoop").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scrollLoop).
+			Ln("scrollLoop").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scrollPage).
 			Out()
 	}
-	t.StateCurr.ScrollLoop = scrollLoop
+	t.StateCurr.ScrollPage = scrollPage
 }
 
 func (t *Processor) base_V010_Container() {
