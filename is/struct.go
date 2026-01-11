@@ -53,14 +53,6 @@ type Processor struct {
 	// No override needed.
 	ScrollLoop func() `json:"-"`
 
-	// Detect end of page, scroll no longer possible.
-	//
-	// No override needed.
-	//
-	// If elements are removed during [Run()], overload [V100_ExitScroll()] to do custom override.
-	// As both of following checks can be flawed if elements are removed from page DOM.
-	ScrollCalculation ProcessorFunc `json:"-"`
-
 	// Use [MustScrollIntoView] on [element]
 	//
 	// No override needed.
@@ -228,13 +220,10 @@ func (t *Processor) Run() {
 					t.funcWrapper(t.MyType+".V090", t.V090_ElementLoopEnd)
 					// -- ELEMENTS LOOP - END
 				}
-				t.funcWrapper(t.MyType+".VScrollCalculation", t.ScrollCalculation)
 			}
-
 			t.funcWrapper(t.MyType+".V100", t.V100_ScrollLoopEnd)
-			t.StateCurr.ScrollCount++
-			// -- SCROLL LOOP - END
 			t.funcWrapper(t.MyType+".ScrollLoop", t.ScrollLoop)
+			t.StateCurr.ScrollCount++
 		}
 	}
 }
@@ -243,7 +232,6 @@ func (t *Processor) Run() {
 func (t *Processor) setFunc() {
 	// -- Following 4 field func rarely need override
 	t.LoadPage = t.base_LoadPage
-	t.ScrollCalculation = t.base_ScrollCalculation
 	t.ScrollElement = t.base_ScrollElement
 	t.ScrollLoop = t.base_ScrollLoop
 	// --- Overload following field func as needed
@@ -277,32 +265,6 @@ func (t *Processor) base_LoadPage() {
 			ezlog.Err().M(t.Err).Out()
 		}
 	}
-}
-
-func (t *Processor) base_ScrollCalculation() {
-	prefix := t.MyType + ".ScrollCalculation" + "(base)"
-	t.StateCurr.Name = prefix
-	var (
-		scroll = t.StateCurr.Scroll
-	)
-	/*
-		"if (elementsCount == elementsCountLast)":
-			will be triggered, if number of elements removed
-					= number of new elements added after scroll
-
-		"if (ElementLastScroll == ElementLast)":
-			will be triggered, if all new elements added after scroll are removed
-	*/
-	if t.StateCurr.ScrollableElement == nil {
-		scroll = false
-	} else if t.StatePrev != nil && t.StatePrev.ScrollableElement != nil && t.StateCurr.ScrollableElement != nil {
-		if t.StatePrev.ScrollableElement.Object.ObjectID == t.StateCurr.ScrollableElement.Object.ObjectID {
-			// prev scroll element == curr scroll element
-			scroll = false
-		}
-	}
-	ezlog.Trace().N(prefix).M("Done").Out()
-	t.StateCurr.Scroll = scroll
 }
 
 func (t *Processor) base_ScrollElement(element *rod.Element) {
@@ -361,8 +323,6 @@ func (t *Processor) base_V040_ElementMatch() {
 	prefix := t.MyType + ".V040_ElementMatch" + "(base)"
 	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing. Return `true`,\"\"").Out()
-	// t.StateCurr.ElementInfoMatched = true
-	// t.StateCurr.ElementInfoMatchedStr = ""
 }
 
 func (t *Processor) base_V050_ElementProcessMatched() {
@@ -387,7 +347,7 @@ func (t *Processor) base_V080_ElementScrollable() {
 	prefix := t.MyType + ".V080_ElementScrollable" + "(base)"
 	t.StateCurr.Name = prefix
 	ezlog.Trace().N(prefix).M("Do nothing. Return `true`").Out()
-	t.StateCurr.Scrollable = true
+	t.StateCurr.ElementScrollable = true
 }
 
 func (t *Processor) base_V090_ElementLoopEnd() {
