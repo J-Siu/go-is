@@ -36,19 +36,25 @@ import (
 // At the bottom of 'Run()' scroll loop, it is passed into [Processor.V100_ScrollLoopEnd()] for customized scroll calculation.
 type State struct {
 	*basestruct.Base
-	Element                *rod.Element `json:"Element"`                // Element being process
-	ElementIndex           int          `json:"ElementIndex"`           // Index of element being process
-	ElementInfo            IInfo        `json:"ElementInfo"`            // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
-	Elements               rod.Elements `json:"-"`                      // Result of [Processor.V020_Elements()]
-	ElementsCount          int          `json:"ElementsCount"`          // Number of elements in current iteration
-	Name                   string       `json:"FuncName"`               // current function/state name
-	Scroll                 bool         `json:"Scroll"`                 // update by ScrollCalculation. Used by [breakLoop]. True = to scroll. False = don't scroll.
-	ScrollCount            int          `json:"ScrollCount"`            // Total number of times [Processor.ElementScroll()] called
-	ScrollLoop             bool         `json:"ScrollLoop"`             // update by ScrollLoop
-	Scrollable             bool         `json:"Scrollable"`             // update by V080_ElementScrollable
+	// --
+	Name string `json:"FuncName"` // current function/state name
+	// --
+	Elements      rod.Elements `json:"-"`             // Result of [Processor.V020_Elements()]
+	ElementsCount int          `json:"ElementsCount"` // Number of elements in current iteration
+	// --
+	Element      *rod.Element `json:"Element"`      // Element being process
+	ElementIndex int          `json:"ElementIndex"` // Index of element being process
+	ElementInfo  IInfo        `json:"ElementInfo"`  // [Info] of [ElementLast]. Return from [Processor.V030_ElementInfo()]
+	// --
+	ElementScrollable bool `json:"Scrollable"` // update by V080_ElementScrollable
+	// --
 	ScrollableElement      *rod.Element `json:"ScrollableElement"`      // Last scrollable element
 	ScrollableElementIndex int          `json:"ScrollableElementIndex"` // Index of element being process
 	ScrollableElementInfo  IInfo        `json:"ScrollableElementInfo"`  // [Info] of [ElementScrollable].
+	// --
+	Scroll      bool `json:"Scroll"`      // update by ScrollCalculation. Used by [breakLoop]. True = to scroll. False = don't scroll.
+	ScrollCount int  `json:"ScrollCount"` // Total number of times [Processor.ElementScroll()] called
+	ScrollLoop  bool `json:"ScrollLoop"`  // update by ScrollLoop
 }
 
 func (t *State) New(scrollCount int) *State {
@@ -60,6 +66,7 @@ func (t *State) New(scrollCount int) *State {
 	t.Scroll = true
 	t.ScrollLoop = true
 	t.ScrollCount = scrollCount
+	t.ScrollableElementInfo = nil
 	ezlog.Debug().M(prefix).Out()
 	return t
 }
