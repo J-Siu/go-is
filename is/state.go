@@ -54,7 +54,7 @@ type State struct {
 	// --
 	Scroll      bool `json:"Scroll"`      // True = to scroll. False = don't scroll.
 	ScrollCount int  `json:"ScrollCount"` // Total number of times [Processor.ElementScroll()] called
-	ScrollPage  bool `json:"ScrollLoop"`  // update by ScrollLoop
+	ScrollPage  bool `json:"ScrollPage"`  // update by ScrollLoop
 }
 
 func (t *State) New(scrollCount int) *State {

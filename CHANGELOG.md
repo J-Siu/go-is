@@ -41,3 +41,10 @@
   - State: consolidate and cleanup state fields
   - update example
   - update go-helper
+- v3.0.1
+  - Processor
+    - remove ScrollCalculation
+  - State
+    - `ScrollLoop` -> `ScrollPage`
+    - cleanup
+  - improve logging output
