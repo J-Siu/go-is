@@ -143,9 +143,9 @@ func (t *Processor) New(property *Property) *Processor {
 	prefix := t.MyType + ".New" + "(base)"
 
 	if property == nil {
-		t.Err = errors.New("is.New: property cannot be nil")
+		t.Err = errors.New(prefix + ": property cannot be nil")
 	} else if property.Page == nil {
-		t.Err = errors.New("is.New: page/tab cannot be nil")
+		t.Err = errors.New(prefix + ": page/tab cannot be nil")
 	} else {
 		t.Property = *property
 		t.StateCurr = new(State).New(0)
