@@ -27,7 +27,7 @@ package xfp
 import (
 	"github.com/J-Siu/go-helper/v2/ezlog"
 	"github.com/J-Siu/go-is/v3/is"
-	"github.com/go-rod/rod"
+	"github.com/runZeroInc/go-rod"
 )
 
 // (1.1) Write a `info` struct

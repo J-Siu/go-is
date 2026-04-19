@@ -48,3 +48,6 @@
     - `ScrollLoop` -> `ScrollPage`
     - cleanup
   - improve logging output
+- v3.0.2
+  - update go-helper/v2, go-dtquery, go version
+  - replace go-rod/rod with runZeroInc/go-rod

@@ -28,7 +28,7 @@ import (
 
 	"github.com/J-Siu/go-helper/v2/basestruct"
 	"github.com/J-Siu/go-helper/v2/ezlog"
-	"github.com/go-rod/rod"
+	"github.com/runZeroInc/go-rod"
 )
 
 type ProcessorFunc func()

@@ -24,7 +24,7 @@ THE SOFTWARE.
 package is
 
 import (
-	"github.com/go-rod/rod"
+	"github.com/runZeroInc/go-rod"
 )
 
 type Property struct {
