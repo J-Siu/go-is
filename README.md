@@ -1,6 +1,6 @@
 # IS - an Infinite Scroll processor
 
-An infinite scroll processing package using [go-rod/rod](https://github.com/go-rod/rod).
+An infinite scroll processing package using [runZeroInc/go-rod](https://github.com/runZeroInc/go-rod).
 
 - [Creating an IS app](#creating-an-is-app)
   - [Example](#example)

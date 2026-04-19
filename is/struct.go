@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-// Package [is] is an infinite scroll processor using [go-rod/rod](https://github.com/go-rod/rod).
+// Package [is] is an infinite scroll processor using [runZeroInc/go-rod](https://github.com/runZeroInc/go-rod).
 package is
 
 import (
