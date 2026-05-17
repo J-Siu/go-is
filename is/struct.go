@@ -38,6 +38,8 @@ type Processor struct {
 	basestruct.Base
 	Property
 
+	Logger *ezlog.EzLog
+
 	StateCurr *State
 	StatePrev *State
 
@@ -153,14 +155,20 @@ func (t *Processor) New(property *Property) *Processor {
 		t.Initialized = true
 	}
 
-	ezlog.Trace().N(prefix).M("Done").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Done").Out()
+	}
 	return t
 }
 
 func (t *Processor) funcWrapper(name string, f ProcessorFunc) *Processor {
-	ezlog.Debug().N(name).TxtStart().Out()
+	if t.Logger != nil {
+		t.Logger.Debug().N(name).TxtStart().Out()
+	}
 	f()
-	ezlog.Debug().N(t.StateCurr.Name).TxtEnd().Out()
+	if t.Logger != nil {
+		t.Logger.Debug().N(t.StateCurr.Name).TxtEnd().Out()
+	}
 	return t
 }
 
@@ -169,7 +177,9 @@ func (t *Processor) funcWrapper(name string, f ProcessorFunc) *Processor {
 // No override needed.
 func (t *Processor) Run() {
 	prefix := t.MyType + ".Run" + "(base)"
-	ezlog.Debug().N(prefix).TxtStart().Out()
+	if t.Logger != nil {
+		t.Logger.Debug().N(prefix).TxtStart().Out()
+	}
 	if t.CheckErrInit(prefix) {
 		t.funcWrapper(t.MyType+".LoadPage", t.LoadPage)
 	}
@@ -178,7 +188,9 @@ func (t *Processor) Run() {
 		t.funcWrapper(t.MyType+".V010", t.V010_Container)
 		// Scroll Loop
 		for t.StateCurr.ScrollPage {
-			ezlog.Debug().N(prefix).N("SCROLL LOOP").TxtStart().Out()
+			if t.Logger != nil {
+				t.Logger.Debug().N(prefix).N("SCROLL LOOP").TxtStart().Out()
+			}
 			// -- SCROLL LOOP - START
 			t.StatePrev = t.StateCurr
 			if t.StatePrev != nil {
@@ -193,9 +205,13 @@ func (t *Processor) Run() {
 				t.StateCurr.Scroll = false // no element, no scroll
 			} else {
 				t.StateCurr.ElementsCount = len(t.StateCurr.Elements)
-				ezlog.Trace().N(prefix).N("elements count").M(t.StateCurr.ElementsCount).Out()
+				if t.Logger != nil {
+					t.Logger.Trace().N(prefix).N("elements count").M(t.StateCurr.ElementsCount).Out()
+				}
 				for index := t.StatePrev.ElementsCount; index < t.StateCurr.ElementsCount; index++ {
-					ezlog.Debug().N(prefix).N("ELEMENTS LOOP").TxtStart().Out()
+					if t.Logger != nil {
+						t.Logger.Debug().N(prefix).N("ELEMENTS LOOP").TxtStart().Out()
+					}
 					// -- ELEMENTS LOOP - START
 					t.StateCurr.Element = (t.StateCurr.Elements)[index]
 					t.StateCurr.ElementIndex = index
@@ -222,14 +238,18 @@ func (t *Processor) Run() {
 					}
 					t.funcWrapper(t.MyType+".V090", t.V090_ElementLoopEnd)
 					// -- ELEMENTS LOOP - END
-					ezlog.Debug().N(prefix).N("ELEMENTS LOOP").TxtEnd().Out()
+					if t.Logger != nil {
+						t.Logger.Debug().N(prefix).N("ELEMENTS LOOP").TxtEnd().Out()
+					}
 				}
 			}
 			t.funcWrapper(t.MyType+".V100", t.V100_ScrollLoopEnd)
 			t.funcWrapper(t.MyType+".ScrollLoop", t.ScrollLoop)
 			t.StateCurr.ScrollCount++
 			// -- SCROLL LOOP - END
-			ezlog.Debug().N(prefix).N("SCROLL LOOP").TxtEnd().Out()
+			if t.Logger != nil {
+				t.Logger.Debug().N(prefix).N("SCROLL LOOP").TxtEnd().Out()
+			}
 		}
 	}
 }
@@ -258,32 +278,44 @@ func (t *Processor) base_LoadPage() {
 	t.StateCurr.Name = prefix
 	if t.CheckErrInit(prefix) {
 		if t.UrlLoad {
-			ezlog.Debug().N(prefix).N("urlStr").M(t.UrlStr).Out()
+			if t.Logger != nil {
+				t.Logger.Debug().N(prefix).N("urlStr").M(t.UrlStr).Out()
+			}
 			t.Err = t.Page.Navigate(t.UrlStr)
 			if t.Err == nil {
-				ezlog.Trace().N(prefix).N("MustWaitDOMStable").TxtStart().Out()
+				if t.Logger != nil {
+					t.Logger.Trace().N(prefix).N("MustWaitDOMStable").TxtStart().Out()
+				}
 				t.Page.MustWaitDOMStable()
-				ezlog.Trace().N(prefix).N("MustWaitDOMStable").TxtEnd().Out()
+				if t.Logger != nil {
+					t.Logger.Trace().N(prefix).N("MustWaitDOMStable").TxtEnd().Out()
+				}
 			}
 		}
 		if t.Err != nil {
 			t.Err = errors.New(prefix + ": " + t.Err.Error())
-			ezlog.Err().M(t.Err).Out()
+			if t.Logger != nil {
+				t.Logger.Err().M(t.Err).Out()
+			}
 		}
 	}
 }
 
 func (t *Processor) base_ScrollElement(element *rod.Element) {
 	prefix := t.MyType + ".ScrollElement" + "(base)"
-	ezlog.Debug().N(prefix).TxtStart().Out()
+	if t.Logger != nil {
+		t.Logger.Debug().N(prefix).TxtStart().Out()
+	}
 	if element != nil {
 		element.MustScrollIntoView()
-		ezlog.Trace().N(prefix).M("Scrolled").Out()
-		// ezlog.Trace().N(prefix).N("MustWaitDOMStable").TxtStart().Out()
+		if t.Logger != nil {
+			t.Logger.Trace().N(prefix).M("Scrolled").Out()
+		}
 		t.Page.MustWaitDOMStable()
-		// ezlog.Trace().N(prefix).N("MustWaitDOMStable").TxtEnd().Out()
 	}
-	ezlog.Debug().N(prefix).TxtEnd().Out()
+	if t.Logger != nil {
+		t.Logger.Debug().N(prefix).TxtEnd().Out()
+	}
 }
 
 func (t *Processor) base_ScrollLoop() {
@@ -292,16 +324,18 @@ func (t *Processor) base_ScrollLoop() {
 	var (
 		scrollPage = t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))
 	)
-	if ezlog.GetLogLevel() == ezlog.DEBUG ||
-		ezlog.GetLogLevel() == ezlog.TRACE {
-		ezlog.
-			Debug().
-			// Trace().
-			N(prefix).
-			Ln("StateCurr").M(t.StateCurr).
-			Ln("scrollMax").M(t.ScrollMax).
-			Ln("scrollLoop").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scrollPage).
-			Out()
+	if t.Logger != nil {
+		if t.Logger.GetLogLevel() == ezlog.DEBUG ||
+			t.Logger.GetLogLevel() == ezlog.TRACE {
+			t.Logger.
+				Debug().
+				// Trace().
+				N(prefix).
+				Ln("StateCurr").M(t.StateCurr).
+				Ln("scrollMax").M(t.ScrollMax).
+				Ln("scrollLoop").N("t.StateCurr == nil || (t.StateCurr.Scroll && (t.StateCurr.ScrollCount < t.ScrollMax || t.ScrollMax < 0))").M(scrollPage).
+				Out()
+		}
 	}
 	t.StateCurr.ScrollPage = scrollPage
 }
@@ -309,61 +343,81 @@ func (t *Processor) base_ScrollLoop() {
 func (t *Processor) base_V010_Container() {
 	prefix := t.MyType + ".V010_Container" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Done").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Done").Out()
+	}
 }
 
 func (t *Processor) base_V020_Elements() {
 	prefix := t.MyType + ".V020_Elements" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
+	}
 }
 
 func (t *Processor) base_V030_ElementInfo() {
 	prefix := t.MyType + ".V030_ElementInfo" + "(base)"
 	t.StateCurr.Name = prefix
 	t.StateCurr.ElementInfo = nil
-	ezlog.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing. Return `nil`").Out()
+	}
 }
 
 func (t *Processor) base_V040_ElementMatch() {
 	prefix := t.MyType + ".V040_ElementMatch" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing. Return `true`,\"\"").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing. Return `true`,\"\"").Out()
+	}
 }
 
 func (t *Processor) base_V050_ElementProcessMatched() {
 	prefix := t.MyType + ".V050_ElementProcessMatched" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing").Out()
+	}
 }
 
 func (t *Processor) base_V060_ElementProcessUnmatch() {
 	prefix := t.MyType + ".V060_ElementProcessUnmatch" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing").Out()
+	}
 }
 
 func (t *Processor) base_V070_ElementProcess() {
 	prefix := t.MyType + ".V070_ElementProcess" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing").Out()
+	}
 }
 
 func (t *Processor) base_V080_ElementScrollable() {
 	prefix := t.MyType + ".V080_ElementScrollable" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing. Return `true`").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing. Return `true`").Out()
+	}
 	t.StateCurr.ElementScrollable = true
 }
 
 func (t *Processor) base_V090_ElementLoopEnd() {
 	prefix := t.MyType + ".V090_ElementLoopEnd" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing").Out()
+	}
 }
 
 func (t *Processor) base_V100_ScrollLoopEnd() {
 	prefix := t.MyType + ".V100_ScrollLoopEnd" + "(base)"
 	t.StateCurr.Name = prefix
-	ezlog.Trace().N(prefix).M("Do nothing").Out()
+	if t.Logger != nil {
+		t.Logger.Trace().N(prefix).M("Do nothing").Out()
+	}
 }

@@ -37,6 +37,8 @@ import (
 type State struct {
 	*basestruct.Base
 	// --
+	Logger *ezlog.EzLog
+	// --
 	Name string `json:"FuncName"` // current function/state name
 	// --
 	Elements      rod.Elements `json:"-"`             // Result of [Processor.V020_Elements()]
@@ -66,6 +68,8 @@ func (t *State) New(scrollCount int) *State {
 	t.ScrollPage = true
 	t.ScrollCount = scrollCount
 	t.ScrollableElementInfo = nil
-	ezlog.Debug().M(prefix).Out()
+	if t.Logger != nil {
+		t.Logger.Debug().M(prefix).Out()
+	}
 	return t
 }
