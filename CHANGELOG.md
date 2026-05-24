@@ -53,3 +53,8 @@
   - replace go-rod/rod with runZeroInc/go-rod
 - v3.0.3
   - update go-helper/v2
+- v3.0.3
+  - update go-helper/v2
+- v3.0.4
+  - IInfoList: add sort.Interface
+  - update go-helper/v2
