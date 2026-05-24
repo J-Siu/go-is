@@ -23,6 +23,8 @@ THE SOFTWARE.
 package is
 
 import (
+	"bytes"
+
 	"github.com/J-Siu/go-helper/v2/ezlog"
 )
 
@@ -65,6 +67,7 @@ func (t *InfoBase) SetMatchedStr(matchedStr string) { t.matchedStr = matchedStr 
 // Place holder only
 func (t *InfoBase) String() string { return "String() placeholder!" }
 
+// Implemented Print() and sort.Interface
 type IInfoList []IInfo
 
 func (t *IInfoList) Print(mode IInfoListPrintMode) {
@@ -82,3 +85,9 @@ func (t *IInfoList) Print(mode IInfoListPrintMode) {
 		}
 	}
 }
+
+func (l *IInfoList) Len() int { return len(*l) }
+func (l *IInfoList) Less(i, j int) bool {
+	return bytes.Compare([]byte((*l)[i].String()), []byte((*l)[j].String())) < 0
+}
+func (l *IInfoList) Swap(i, j int) { (*l)[i], (*l)[j] = (*l)[j], (*l)[i] }
